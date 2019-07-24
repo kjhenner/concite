@@ -3,6 +3,7 @@ import numpy as np
 from typing import Dict, List
 from overrides import overrides
 import json
+import jsonlines
 import logging
 
 import allennlp
@@ -48,10 +49,10 @@ class AclarcDocDatasetReader(DatasetReader):
                 title: str,
                 abstract: str,
                 venue: str,
-                n2v_vector: np.ndarray) -> Instance:
+                graph_vector: np.ndarray) -> Instance:
 
-        title_tokens = self.tokenizer.tokenize(title)
-        abstract_tokens = self.tokenizer.tokenize(abstract)
+        title_tokens = self._tokenizer.tokenize(title)
+        abstract_tokens = self._tokenizer.tokenize(abstract)
 
         fields = {
             'paper_id': MetadataField(paper_id),
