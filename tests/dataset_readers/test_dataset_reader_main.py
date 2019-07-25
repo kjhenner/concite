@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.append(str(Path('.').absolute()))
 
-from dataset_readers.aclarc_data_reader import AclarcDocDatasetReader
+from concite.dataset_readers.aclarc_data_reader import AclarcDocDatasetReader
 
 class TestDatasetReader(AllenNlpTestCase):
     def test_read_from_file(self):
