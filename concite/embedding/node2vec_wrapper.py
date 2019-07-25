@@ -5,7 +5,6 @@ import numpy as np
 import csv
 import os
 
-N2V_PATH = '/home/khenner/src/snap/examples/node2vec/node2vec'
 
 class Node2VecEmb:
 
