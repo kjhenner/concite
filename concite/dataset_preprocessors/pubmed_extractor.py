@@ -153,17 +153,3 @@ class Loader():
     def write_document_data(self, document_data, out_path):
         with jsonlines.open(out_path, 'w') as writer:
             writer.write_all(document_data)
-
-if __name__ == "__main__":
-
-    data_dir = sys.argv[1]
-    documents_out = sys.argv[2]
-    edges_out = sys.argv[3]
-
-    loader = Loader(data_dir)
-    documents, edges = loader.parse_paths()
-    documents = [document for document in documents if document.get('pmid')]
-    ids = set(document['pmid'] for document in documents)
-    edges = [edge for edge in edges if edge.get('citing_paper_id') in ids and edge.get('cited_paper_id') in ids]
-    loader.write_edge_data(edges, edges_out)
-    loader.write_document_data(documents, documents_out)
