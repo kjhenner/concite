@@ -31,7 +31,7 @@ class VenueClassifier(Model):
         super(VenueClassifier, self).__init__(vocab, regularizer)
 
         self.text_field_embedder = text_field_embedder
-        self.num_classes = self.vocab.get_vocab_size("labels")
+        self.num_classes = self.vocab.get_vocab_size("venues")
         self.abstract_encoder = abstract_encoder
         self.classifier_feedforward = classifier_feedforward
         self.metrics = {
@@ -50,14 +50,14 @@ class VenueClassifier(Model):
         encoded_abstract = self.abstract_encoder(embedded_abstract, abstract_mask)
 
         logits = self.classifier_feedforward(torch.cat([encoded_abstract, graph_vector], dim=-1))
-        class_probabilities = F.softmax(logits)
+        class_probabilities = F.softmax(logits, dim=1)
 
         output_dict = {"class_probabilities": class_probabilities}
 
-        if label is not None:
-            loss = self.loss(logits, label.squeeze(-1))
-            for metric in self.metrics.value():
-                metric(logits, label.squeeze(-1))
+        if venue is not None:
+            loss = self.loss(logits, venue)
+            for metric in self.metrics.values():
+                metric(logits, venue)
             output_dict["loss"] = loss
 
         return output_dict
@@ -68,8 +68,8 @@ class VenueClassifier(Model):
     def decode(self, output_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         predictions = output_dict['class_probabilities'].cpu().data.numpy()
         argmax_indices = numpy.argmax(predictions, axis=-1)
-        labels = [self.vocab.get_token_from_index(x, namespace="labels")
+        venues = [self.vocab.get_token_from_index(x, namespace="venues")
                 for x in argmax_indices]
-        output_dict['label'] = labels
+        output_dict['venue'] = venues
         return output_dict
 
