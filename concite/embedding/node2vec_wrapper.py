@@ -5,7 +5,6 @@ import numpy as np
 import csv
 import os
 
-N2V_PATH = '/home/khenner/src/snap/examples/node2vec/node2vec'
 
 class Node2VecEmb:
 
@@ -13,7 +12,6 @@ class Node2VecEmb:
 
         self.verbose = verbose
         nodes = list(set([node for edge in edges for node in edge]))
-        print('n2v node count:')
         self.idx_to_node = dict(enumerate(nodes))
         self.node_to_idx = dict([(node, i) for i, node in enumerate(nodes)])
         out_path = os.path.abspath('{}_{}_{}_{}_{}.emb'.format(name, l, d, p, q))
