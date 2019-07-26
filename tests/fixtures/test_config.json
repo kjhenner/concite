@@ -26,10 +26,9 @@
     },
     "classifier_feedforward": {
       "input_dim": 328,
-      "num_layers": 2,
-      "hidden_dims": [20, 2],
-      "activations": ["relu", "linear"],
-      "dropout": [0.2, 0.0]
+      "num_layers": 1,
+      "hidden_dims": 20,
+      "activations": "relu"
     }
   },
   "iterator": {
