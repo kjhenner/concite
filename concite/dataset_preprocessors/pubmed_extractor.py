@@ -24,15 +24,16 @@ class Loader():
         edges = []
         count = len(self.doc_paths)
         for i, path in enumerate(self.doc_paths):
-            if i % 10 == 0:
-                print(str(i) + " of " + str(count))
+            #if i % 10 == 0:
+            #    print(str(i) + " of " + str(count))
             try:
                 document, cit_edges = self.parse_cit_contexts(path)
                 documents.append(document)
                 edges += cit_edges
             except Exception as e:
-                print(path)
-                print(e)
+                pass
+                #print(path)
+                #print(e)
         return documents, edges
 
     def get_context_window(self, text, offset, window_size):
