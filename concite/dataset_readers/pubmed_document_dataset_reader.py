@@ -34,13 +34,14 @@ class PubmedDocumentDatasetReader(DatasetReader):
 
     @overrides
     def _read(self, file_path):
-        for ex in jsonlines.open(file_path):
-            yield self.text_to_instance(
-                #title=ex['title'],
-                abstract=ex['abstract'],
-                venue=ex['journal-id'],
-                graph_vector=np.array(ex['n2v_vector'])
-            )
+        with jsonlines.open(file_path) as reader:
+            for ex in reader:
+                yield self.text_to_instance(
+                    #title=ex['title'],
+                    abstract=ex['abstract'],
+                    venue=ex['journal-id'],
+                    graph_vector=np.array(ex['n2v_vector'])
+                )
 
     @overrides
     def text_to_instance(self,
