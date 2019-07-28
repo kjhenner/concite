@@ -1,8 +1,9 @@
 import os
-import networkx as nx
+from graph_tool.all import *
 import numpy as np
 import random
 from collections import defaultdict
+from collections.abc import Iterable
 import csv
 import jsonlines
 
@@ -12,69 +13,87 @@ from pathlib import Path
 sys.path.append(str(Path('.').absolute()))
 from concite.embedding.node2vec_wrapper import Node2VecEmb
 
-class CitGraph(nx.MultiDiGraph):
-#class CitGraph(nx.Graph):
+class CitGraph(Graph):
+
+    def __init__(self,
+            v_key = 'pmid',
+            e1_key = 'citing_paper_id',
+            e2_key = 'cited_paper_id'):
+        super().__init__()
+        self.fields = ['pmid', 'abstract', 'title', 'year', 'journal-id']
+        for field in self.fields:
+            self.vertex_properties[field] = self.new_vertex_property('string')
+        self.v_key = v_key
+        self.e1_key = e1_key
+        self.e2_key = e2_key
+        self.v_map = {}
+        self.v_ids = {}
+
+    def load_data_from_dir(self, data_path):
+        self.load_vertices_from_dir(data_path)
+        self.load_edges_from_dir(data_path)
+
+    def load_vertices_from_dir(self, vertex_path):
+        paths = [os.path.join(dp, f)
+                for dp, dn, filenames in os.walk(vertex_path)
+                for f in filenames if f.split('_')[-1] == 'documents.jsonl']
+        path_count = len(paths)
+        for i, path in enumerate(paths[:20]):
+            print("loading {} of {} node files".format(i, path_count))
+            self.load_vertices(path)
+
+    def load_vertices(self, vertex_path):
+        with jsonlines.open(vertex_path) as reader:
+            documents = [doc for doc in reader
+                    if doc.get(self.v_key) and doc.get('abstract')]
+        keys = [doc[self.v_key] for doc in documents]
+        vertices = self.add_vertex(len(keys))
+        # add_vertex only returns a generator if multiple vertices are added,
+        # and otherwise returns the added vertex. In the latter case, we must
+        # convert that single vertex to an iterator so it works with the
+        # following code.
+        if not isinstance(vertices, Iterable):
+            vertex_indices = [int(vertices)]
+        else:
+            vertex_indices = list(map(int, vertices))
+        self.v_map.update(dict(zip(keys, vertex_indices)))
+        self.v_ids.update(dict(zip(vertex_indices, keys)))
+        for v, doc in zip(vertex_indices, documents):
+            for field in self.fields:
+                self.vp[field][v] = doc[field]
+
+    def load_edges_from_dir(self, edge_path):
+        paths = [os.path.join(dp, f)
+                for dp, dn, filenames in os.walk(edge_path)
+                for f in filenames if f.split('_')[-1] == 'edges.jsonl']
+        path_count = len(paths)
+        for i, path in enumerate(paths[:20]):
+            print("loading {} of {} edge files".format(i, path_count))
+            self.load_edges(path)
+
+    def ensure_vertex(self, v_id):
+        v = self.v_map.get(v_id)
+        if v is None:
+            v = int(self.add_vertex())
+            self.v_map[v_id] = v
+            self.v_ids[v] = v_id
+            self.vp[self.v_key][v] = v_id
+        return v
 
     def load_edges(self, edge_path):
+        edge_list = []
         with jsonlines.open(edge_path) as reader:
-            self.add_edges_from([(ex['citing_paper_id'], ex['cited_paper_id'])
-                for ex in reader])
-
-    def random_edge_chunk(self):
-        l1 = list(self.nodes())
-        l2 = list(self.nodes())
-        random.shuffle(l1)
-        random.shuffle(l2)
-        return set(zip(l1, l2))
-
-    def filter_by_degree(self, degree_cutoff=2):
-        node_count = self.number_of_nodes()
-        while True:
-            remove = [n for n, d in self.degree() if d < degree_cutoff]
-            self.remove_nodes_from(remove)
-            if node_count == self.number_of_nodes():
-                break
-            else:
-                node_count = self.number_of_nodes()
-
-    def negative_edges(self, n):
-        negative_edges = set()
-        edge_set = set(self.edges())
-        while len(negative_edges) < n:
-            negative_edges = negative_edges | self.random_edge_chunk().difference(edge_set)
-        return list(negative_edges)[:n]
-
-    def train_test_split_edges(self, test_ratio=0.2):
-        # Split into train and test segments, while ensuring that at least
-        # one edge is preserved for each node.
-        edge_sample = list(self.edges())
-        test_count = int(len(edge_sample) * test_ratio)
-        random.shuffle(edge_sample)
-        test_edges = []
-        train_edges = []
-        protected_edges = set([(node, random.choice(list(self.neighbors(node))))
-            for node in self.nodes()])
-        protected_edges = protected_edges.union(set([(e[1], e[0])
-            for e in protected_edges]))
-        for i, edge in enumerate(edge_sample):
-            if len(test_edges) < test_count:
-                if edge not in protected_edges:
-                    test_edges.append(edge)
-                else:
-                    train_edges.append(edge)
-            else:
-                train_edges += edge_sample[i:]
-                break
-        return train_edges, test_edges
+            for ex in reader:
+                source_id = ex.get(self.e1_key)
+                target_id = ex.get(self.e2_key)
+                if source_id and target_id:
+                    source_v = self.ensure_vertex(source_id)
+                    target_v = self.ensure_vertex(target_id)
+                    self.add_edge(source_v, target_v)
 
     def embed_edges(self, edges, l=40, d=128, p=0.5, q=0.5, name='emb', use_cache=True):
-        return Node2VecEmb(edges, l, d, p, q, name=name, use_cache=use_cache)
+        emb = Node2VecEmb(edges, l, d, p, q, name=name, use_cache=use_cache)
+        self.vp['graph_vector'] = self.new_vertex_property('vector<double>')
+        for i, vec in enumerate(emb.array):
+            self.vp.graph_vector[int(self.vertex(emb.vector_idx_to_node[i]))] = vec
 
-    def load_node_data(self, path):
-        node_set = set(self.nodes())
-        with open(path, 'r') as f:
-            reader = csv.reader(f, delimiter='\t')
-            for row in reader:
-                if row[0] in node_set:
-                    for i, key in enumerate(['year', 'title', 'authors']):
-                        self.nodes[row[0]][key] = row[i+1]
