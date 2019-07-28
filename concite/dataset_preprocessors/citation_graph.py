@@ -38,7 +38,7 @@ class CitGraph(Graph):
                 for dp, dn, filenames in os.walk(vertex_path)
                 for f in filenames if f.split('_')[-1] == 'documents.jsonl']
         path_count = len(paths)
-        for i, path in enumerate(paths[:20]):
+        for i, path in enumerate(paths):
             print("loading {} of {} node files".format(i, path_count))
             self.load_vertices(path)
 
@@ -67,7 +67,7 @@ class CitGraph(Graph):
                 for dp, dn, filenames in os.walk(edge_path)
                 for f in filenames if f.split('_')[-1] == 'edges.jsonl']
         path_count = len(paths)
-        for i, path in enumerate(paths[:20]):
+        for i, path in enumerate(paths):
             print("loading {} of {} edge files".format(i, path_count))
             self.load_edges(path)
 
@@ -91,8 +91,8 @@ class CitGraph(Graph):
                     target_v = self.ensure_vertex(target_id)
                     self.add_edge(source_v, target_v)
 
-    def embed_edges(self, edges, l=40, d=128, p=0.5, q=0.5, name='emb', use_cache=True):
-        emb = Node2VecEmb(edges, l, d, p, q, name=name, use_cache=use_cache)
+    def embed_edges(self, l=40, d=128, p=0.5, q=0.5, name='emb', use_cache=True):
+        emb = Node2VecEmb(self.get_edges()[:, :2], l, d, p, q, name=name, use_cache=use_cache)
         self.vp['graph_vector'] = self.new_vertex_property('vector<double>')
         for i, vec in enumerate(emb.array):
             self.vp.graph_vector[int(self.vertex(emb.vector_idx_to_node[i]))] = vec
