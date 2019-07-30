@@ -30,7 +30,7 @@ class PubmedDocumentDatasetReader(DatasetReader):
                  ) -> None:
         super().__init__(lazy)
         self._tokenizer = tokenizer or WordTokenizer()
-        self._token_indexers = {"tokens": SingleIdTokenIndexer()}
+        self._token_indexers = token_indexers or {"tokens": SingleIdTokenIndexer()}
 
     @overrides
     def _read(self, file_path):
@@ -39,7 +39,7 @@ class PubmedDocumentDatasetReader(DatasetReader):
                 yield self.text_to_instance(
                     #title=ex['title'],
                     abstract=ex['abstract'],
-                    venue=ex['journal-id'],
+                    label=ex['journal-id'],
                     graph_vector=np.array(ex['n2v_vector'])
                 )
 
@@ -47,7 +47,7 @@ class PubmedDocumentDatasetReader(DatasetReader):
     def text_to_instance(self,
                 #title: str,
                 abstract: str,
-                venue: str,
+                label: str,
                 graph_vector: np.ndarray) -> Instance:
 
         #title_tokens = self._tokenizer.tokenize(title)
@@ -56,7 +56,7 @@ class PubmedDocumentDatasetReader(DatasetReader):
         fields = {
             #'title': TextField(title_tokens, self._token_indexers),
             'abstract': TextField(abstract_tokens, self._token_indexers),
-            'venue': LabelField(venue),
+            'label': LabelField(label),
             'graph_vector': ArrayField(graph_vector)
         }
 
