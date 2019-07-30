@@ -45,7 +45,7 @@ class CitGraph(Graph):
     def load_vertices(self, vertex_path):
         with jsonlines.open(vertex_path) as reader:
             documents = [doc for doc in reader
-                    if doc.get(self.v_key) and doc.get('abstract')]
+                    if doc.get(self.v_key) and doc.get('abstract') and doc.get('journal-id')]
         keys = [doc[self.v_key] for doc in documents]
         vertices = self.add_vertex(len(keys))
         # add_vertex only returns a generator if multiple vertices are added,
@@ -91,8 +91,13 @@ class CitGraph(Graph):
                     target_v = self.ensure_vertex(target_id)
                     self.add_edge(source_v, target_v)
 
-    def embed_edges(self, l=40, d=128, p=0.5, q=0.5, name='emb', use_cache=True):
-        emb = Node2VecEmb(self.get_edges()[:, :2], l, d, p, q, name=name, use_cache=use_cache)
+    def degree_filtered_view(self, min_degree=2):
+        return GraphView(self, vfilt=lambda v : v.out_degree() + v.in_degree() > min_degree)
+
+    def embed_edges(self, graph=None, l=40, d=128, p=0.5, q=0.5, name='emb', use_cache=True):
+        if not graph:
+            graph = self
+        emb = Node2VecEmb(graph.get_edges()[:, :2], l, d, p, q, name=name, use_cache=use_cache)
         self.vp['graph_vector'] = self.new_vertex_property('vector<double>')
         for i, vec in enumerate(emb.array):
             self.vp.graph_vector[int(self.vertex(emb.vector_idx_to_node[i]))] = vec

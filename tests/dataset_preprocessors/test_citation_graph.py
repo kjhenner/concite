@@ -23,3 +23,8 @@ class TestCitGraph(unittest.TestCase):
         self.assertEqual(
                 len([v for v in self.g.vertices() if self.g.vp.graph_vector[v]]),
                 self.g.num_vertices())
+
+    def test_edge_degree_filter(self):
+        view = self.g.degree_filtered_view()
+        self.assertEqual(len(list(view.edges())), 15)
+        self.assertEqual(len(list(view.vertices())), 7)
