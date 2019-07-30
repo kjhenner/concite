@@ -1,20 +1,29 @@
 import sys
-import networkx as nx
-import jsonlines
+import os
+from multiprocessing import Pool, Manager
 from pathlib import Path
 sys.path.append(str(Path('.').absolute()))
 
 from concite.dataset_preprocessors import pubmed_extractor
 
 data_dir = sys.argv[1]
-documents_out = sys.argv[2]
-edges_out = sys.argv[3]
+out_dir = sys.argv[2]
 
-loader = pubmed_extractor.Loader(data_dir)
-documents, edges = loader.parse_paths()
-documents = [document for document in documents if document.get('pmid') and document.get('abstract')]
-# Uncommet to limit edges to internal documents
-#ids = set(document['pmid'] for document in documents)
-#edges = [edge for edge in edges if edge.get('citing_paper_id') in ids and edge.get('cited_paper_id') in ids]
-loader.write_edge_data(edges, edges_out)
-loader.write_document_data(documents, documents_out)
+subdirs = [os.path.join(data_dir, name) for name in os.listdir(data_dir)
+        if os.path.isdir(os.path.join(data_dir, name))]
+
+def extract_to(path):
+    loader = pubmed_extractor.Loader(path)
+    name_base = os.path.basename(path)
+
+    documents, edges = loader.parse_paths()
+    loader.write_edge_data(edges,
+            os.path.join(out_dir, name_base + '_edges.jsonl'))
+    loader.write_document_data(documents,
+            os.path.join(out_dir, name_base + '_documents.jsonl'))
+
+count = 0
+with Pool(processes=50) as pool:
+    for _ in pool.imap_unordered(extract_to, subdirs):
+        print(count)
+        count += 1
