@@ -17,23 +17,24 @@ class Node2VecEmb:
         out_path = os.path.abspath('{}_{}_{}_{}_{}.emb'.format(name, l, d, p, q))
 
         if not os.path.exists(out_path) or not use_cache:
-            f = NamedTemporaryFile(mode='w')
-            if self.verbose:
-                print("Writing edge data for {} edges to {}...".format(len(edges), f.name))
-            
-            f.write('\n'.join(["{}\t{}".format(*map(self.node_to_idx.get, edge)) for edge in edges]))
-            
-            edge_path = f.name
-            args = ['/home/khenner/src/snap/examples/node2vec/node2vec',
-                    '-i:{}'.format(edge_path),
-                    '-o:{}'.format(out_path),
-                    '-l:{}'.format(l),
-                    '-d:{}'.format(d),
-                    '-p:{}'.format(p),
-                    '-q:{}'.format(q)]
-            p = Popen(args, stdout=PIPE)
-            if self.verbose:
-                print(p.communicate()[0].decode('utf-8'))
+            with NamedTemporaryFile(mode='w') as f:
+                if self.verbose:
+                    print("Writing edge data for {} edges to {}...".format(len(edges), f.name))
+                
+                f.write('\n'.join(["{}\t{}".format(*map(self.node_to_idx.get, edge)) for edge in edges]))
+                f.flush()
+                
+                edge_path = f.name
+                args = ['/home/khenner/src/snap/examples/node2vec/node2vec',
+                        '-i:{}'.format(edge_path),
+                        '-o:{}'.format(out_path),
+                        '-l:{}'.format(l),
+                        '-d:{}'.format(d),
+                        '-p:{}'.format(p),
+                        '-q:{}'.format(q)]
+                p = Popen(args, stdout=PIPE)
+                if self.verbose:
+                    print(p.communicate()[0].decode('utf-8'))
         self.read_embeddings(out_path)
 
     def edge_to_string(self, edge):
