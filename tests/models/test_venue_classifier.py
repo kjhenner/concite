@@ -14,7 +14,7 @@ class VenueClassifierTest(ModelTestCase):
     
     def setUp(self):
         super(VenueClassifierTest, self).setUp()
-        self.set_up_model('tests/fixtures/test_config.json',
+        self.set_up_model('tests/fixtures/test_predict_venue.json',
                           'tests/fixtures/n2v_pubmed_articles.jsonl')
 
     def test_model_can_train_save_and_load(self):

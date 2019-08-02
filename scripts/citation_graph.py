@@ -102,3 +102,7 @@ class CitGraph(Graph):
         for i, vec in enumerate(emb.array):
             self.vp.graph_vector[int(self.vertex(emb.vector_idx_to_node[i]))] = vec
 
+def write_edges(self, graph, path):
+    with open(path, 'w') as f:
+        for edge in graph.get_edges()[:, :2]:
+            f.write('{}\t{}'.format(*edge))

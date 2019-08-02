@@ -12,6 +12,7 @@ from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 from allennlp.data.fields import LabelField, TextField, ArrayField, MetadataField
 from allennlp.data.instance import Instance
 from allennlp.data.tokenizers import Tokenizer, WordTokenizer
+from allennlp.data.tokenizers.word_splitter import BertBasicWordSplitter
 from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
 
 logger = logging.getLogger(__name__)
@@ -29,19 +30,20 @@ class PubmedDocumentDatasetReader(DatasetReader):
                  token_indexers: Dict[str, TokenIndexer] = None,
                  ) -> None:
         super().__init__(lazy)
-        self._tokenizer = tokenizer or WordTokenizer()
+        self._tokenizer = tokenizer or BertBasicWordSplitter()
         self._token_indexers = token_indexers or {"tokens": SingleIdTokenIndexer()}
 
     @overrides
     def _read(self, file_path):
         with jsonlines.open(file_path) as reader:
             for ex in reader:
-                yield self.text_to_instance(
-                    #title=ex['title'],
-                    abstract=ex['abstract'],
-                    label=ex['journal-id'],
-                    graph_vector=np.array(ex['n2v_vector'])
-                )
+                if ex.get('abstract') and ex.get('journal-id'):
+                    yield self.text_to_instance(
+                        #title=ex['title'],
+                        abstract=ex['abstract'],
+                        label=ex['journal-id'],
+                        graph_vector=np.array(ex['n2v_vector'])
+                    )
 
     @overrides
     def text_to_instance(self,
@@ -51,7 +53,7 @@ class PubmedDocumentDatasetReader(DatasetReader):
                 graph_vector: np.ndarray) -> Instance:
 
         #title_tokens = self._tokenizer.tokenize(title)
-        abstract_tokens = self._tokenizer.tokenize(abstract)
+        abstract_tokens = self._tokenizer.split_words(abstract)
 
         fields = {
             #'title': TextField(title_tokens, self._token_indexers),
