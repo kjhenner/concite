@@ -13,7 +13,7 @@ from allennlp.data.fields import TextField, LabelField
 from allennlp.data.token_indexers import SingleIdTokenIndexer
 from allennlp.data.tokenizers import Token
 from allennlp.models.model import Model
-from allennlp.modules import FeedForward, TextFieldEmbedder, Seq2VecEncoder, Seq2SeqEncoder
+from allennlp.modules import FeedForward, TextFieldEmbedder, Seq2VecEncoder
 from allennlp.nn import InitializerApplicator, RegularizerApplicator
 from allennlp.nn import util
 from allennlp.training.metrics import CategoricalAccuracy, F1Measure
@@ -21,20 +21,18 @@ from overrides import overrides
 
 @Model.register("venue_classifier")
 class VenueClassifier(Model):
-    def __init__(self,
-                 vocab: Vocabulary,
+    def __init__(self, vocab: Vocabulary,
                  text_field_embedder: TextFieldEmbedder,
-                 text_encoder: Seq2SeqEncoder,
-                 classifier_feedforward: FeedForward,
                  verbose_metrics: False,
+                 dropout: float = 0.2,
                  initializer: InitializerApplicator = InitializerApplicator(),
                  regularizer: Optional[RegularizerApplicator] = None) -> None:
         super(VenueClassifier, self).__init__(vocab, regularizer)
 
         self.text_field_embedder = text_field_embedder
+        self.dropout = torch.nn.Dropout(dropout)
         self.num_classes = self.vocab.get_vocab_size("labels")
-        self.text_encoder = text_encoder
-        self.classifier_feedforward = classifier_feedforward
+        self.classifier_feedforward = torch.nn.Linear(self.text_field_embedder.get_output_dim() + 128, self.num_classes)
 
         self.label_accuracy = CategoricalAccuracy()
         self.label_f1_metrics = {}
@@ -43,10 +41,7 @@ class VenueClassifier(Model):
 
         for i in range(self.num_classes):
             self.label_f1_metrics[vocab.get_token_from_index(index=i, namespace="labels")] = F1Measure(positive_label=i)
-
         self.loss = torch.nn.CrossEntropyLoss()
-
-        self.pool = lambda text, mask: util.get_final_encoder_states(text, mask, bidirectional=True)
 
         initializer(self)
 
@@ -57,10 +52,7 @@ class VenueClassifier(Model):
                 label: torch.LongTensor = None) -> Dict[str, torch.Tensor]:
 
         embedded_abstract = self.text_field_embedder(abstract)
-        mask = util.get_text_field_mask(abstract)
-        encoded_abstract = self.text_encoder(embedded_abstract, mask)
-        pooled = self.pool(encoded_abstract, mask)
-
+        pooled = self.dropout(embedded_abstract[:, 0, :])
         logits = self.classifier_feedforward(torch.cat([pooled, graph_vector], dim=-1))
         class_probs = F.softmax(logits, dim=1)
 
