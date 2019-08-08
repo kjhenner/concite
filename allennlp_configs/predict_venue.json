@@ -1,6 +1,5 @@
 {
-  "dataset_reader": {
-    "type": "pubmed_document_dataset_reader",
+  "dataset_reader": { "type": "pubmed_document_dataset_reader",
     "token_indexers": {
       "bert": {
         "type": "bert-pretrained",
@@ -17,6 +16,7 @@
   "model": {
     "type": "venue_classifier",
     "verbose_metrics": false,
+    "graph_vector_dim": 128,
     "text_field_embedder": {
       "allow_unmatched_keys": true,
       "embedder_to_indexer_map": {
@@ -35,21 +35,21 @@
   "iterator": {
     "type": "bucket",
     "sorting_keys": [["abstract", "num_tokens"]],
-    "batch_size": 5,
+    "batch_size": 8,
     "cache_instances": true
   },
   "trainer": {
-    "num_epochs": 2,
+    "num_epochs": 10,
     "grad_clipping": 5.0,
     "patience": 3,
     "validation_metric": "+average_F1",
-    "cuda_device": -1,
+    "cuda_device": 6,
     "optimizer": {
       "type": "bert_adam",
       "lr": 1e-5,
       "t_total": -1,
       "max_grad_norm": 1.0,
-      "weight_decay": 0.01,
+      //"weight_decay": 0.01,
       "parameter_groups": [
         [["bias", "LayerNorm.bias", "LayerNorm.weight", "layer_norm.weight"], {"weight_decay": 0.0}]
       ]

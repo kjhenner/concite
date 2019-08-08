@@ -22,6 +22,7 @@ from overrides import overrides
 @Model.register("venue_classifier")
 class VenueClassifier(Model):
     def __init__(self, vocab: Vocabulary,
+                 graph_vector_dim: int = 128,
                  text_field_embedder: TextFieldEmbedder,
                  verbose_metrics: False,
                  dropout: float = 0.2,
@@ -32,7 +33,7 @@ class VenueClassifier(Model):
         self.text_field_embedder = text_field_embedder
         self.dropout = torch.nn.Dropout(dropout)
         self.num_classes = self.vocab.get_vocab_size("labels")
-        self.classifier_feedforward = torch.nn.Linear(self.text_field_embedder.get_output_dim() + 128, self.num_classes)
+        self.classifier_feedforward = torch.nn.Linear(self.text_field_embedder.get_output_dim() + graph_vector_dim, self.num_classes)
 
         self.label_accuracy = CategoricalAccuracy()
         self.label_f1_metrics = {}
