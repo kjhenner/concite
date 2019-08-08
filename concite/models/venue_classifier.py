@@ -22,9 +22,9 @@ from overrides import overrides
 @Model.register("venue_classifier")
 class VenueClassifier(Model):
     def __init__(self, vocab: Vocabulary,
-                 graph_vector_dim: int = 128,
                  text_field_embedder: TextFieldEmbedder,
                  verbose_metrics: False,
+                 graph_vector_dim: int = 128,
                  dropout: float = 0.2,
                  initializer: InitializerApplicator = InitializerApplicator(),
                  regularizer: Optional[RegularizerApplicator] = None) -> None:
