@@ -25,12 +25,16 @@ class PubmedDocumentDatasetReader(DatasetReader):
     """
 
     def __init__(self,
+                 max_instances: int = None,
+                 min_abstract_len: int = 10,
                  min_jid_count: int = 50,
                  lazy: bool = False,
                  tokenizer: Tokenizer = None,
                  token_indexers: Dict[str, TokenIndexer] = None,
                  ) -> None:
         super().__init__(lazy)
+        self.max_instances = max_instances
+        self.min_abstract_len = min_abstract_len
         self.min_jid_count = min_jid_count
         self._tokenizer = tokenizer or BertBasicWordSplitter()
         self._token_indexers = token_indexers or {"tokens": SingleIdTokenIndexer()}
@@ -38,8 +42,12 @@ class PubmedDocumentDatasetReader(DatasetReader):
     @overrides
     def _read(self, file_path):
         with jsonlines.open(file_path) as reader:
+            count = 0
             for ex in reader:
-                if ex.get('abstract') and ex.get('journal-id') and ex.get('jid_count') and ex['jid_count'] >= self.min_jid_count:
+                if self.max_instances and count > self.max_instances:
+                    break
+                if ex.get('abstract') and len(ex['abstract']) >= self.min_abstract_len and ex.get('journal-id') and ex.get('jid_count') and ex['jid_count'] >= self.min_jid_count:
+                    count += 1
                     yield self.text_to_instance(
                         #title=ex['title'],
                         abstract=ex['abstract'],
