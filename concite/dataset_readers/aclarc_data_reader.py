@@ -12,6 +12,7 @@ from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 from allennlp.data.fields import LabelField, TextField, ArrayField, MetadataField
 from allennlp.data.instance import Instance
 from allennlp.data.tokenizers import Tokenizer, WordTokenizer
+from allennlp.data.tokenizers.word_splitter import BertBasicWordSplitter
 from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
 
 logger = logging.getLogger(__name__)
@@ -29,36 +30,29 @@ class AclarcDocDatasetReader(DatasetReader):
                  token_indexers: Dict[str, TokenIndexer] = None,
                  ) -> None:
         super().__init__(lazy)
-        self._tokenizer = tokenizer or WordTokenizer()
-        self._token_indexers = {"tokens": SingleIdTokenIndexer()}
+        self._tokenizer = tokenizer or BertBasicWordSplitter()
+        self._token_indexers = token_indexers or {"tokens": SingleIdTokenIndexer()}
 
     @overrides
     def _read(self, file_path):
         for ex in jsonlines.open(file_path):
             yield self.text_to_instance(
-                paper_id=ex['paper_id'],
-                title=ex['title'],
                 abstract=ex['abstract'],
-                venue=ex['venue'],
-                graph_vector=ex['graph_vector']
+                label=ex['venue'],
+                graph_vector=np.array(ex['graph_vector'])
             )
 
     @overrides
     def text_to_instance(self,
-                paper_id: str,
-                title: str,
                 abstract: str,
-                venue: str,
+                label: str,
                 graph_vector: np.ndarray) -> Instance:
 
-        title_tokens = self._tokenizer.tokenize(title)
-        abstract_tokens = self._tokenizer.tokenize(abstract)
+        abstract_tokens = self._tokenizer.split_words(abstract)
 
         fields = {
-            'paper_id': MetadataField(paper_id),
-            'title': TextField(title_tokens, self._token_indexers),
             'abstract': TextField(abstract_tokens, self._token_indexers),
-            'venue': LabelField(venue),
+            'label': LabelField(label),
             'graph_vector': ArrayField(graph_vector)
         }
 
