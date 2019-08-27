@@ -24,6 +24,7 @@ class VenueClassifier(Model):
     def __init__(self, vocab: Vocabulary,
                  text_field_embedder: TextFieldEmbedder,
                  verbose_metrics: False,
+                 use_graph_vector: bool = True,
                  graph_vector_dim: int = 128,
                  dropout: float = 0.2,
                  initializer: InitializerApplicator = InitializerApplicator(),
@@ -31,9 +32,14 @@ class VenueClassifier(Model):
         super(VenueClassifier, self).__init__(vocab, regularizer)
 
         self.text_field_embedder = text_field_embedder
+        self.use_graph_vector = use_graph_vector
         self.dropout = torch.nn.Dropout(dropout)
         self.num_classes = self.vocab.get_vocab_size("labels")
-        self.classifier_feedforward = torch.nn.Linear(self.text_field_embedder.get_output_dim() + graph_vector_dim, self.num_classes)
+
+        if self.use_graph_vector:
+            self.classifier_feedforward = torch.nn.Linear(self.text_field_embedder.get_output_dim() + graph_vector_dim, self.num_classes)
+        else:
+            self.classifier_feedforward = torch.nn.Linear(self.text_field_embedder.get_output_dim(), self.num_classes)
 
         self.label_accuracy = CategoricalAccuracy()
         self.label_f1_metrics = {}
@@ -54,7 +60,10 @@ class VenueClassifier(Model):
 
         embedded_abstract = self.text_field_embedder(abstract)
         pooled = self.dropout(embedded_abstract[:, 0, :])
-        logits = self.classifier_feedforward(torch.cat([pooled, graph_vector], dim=-1))
+        if self.use_graph_vector:
+            logits = self.classifier_feedforward(torch.cat([pooled, graph_vector], dim=-1))
+        else:
+            logits = self.classifier_feedforward(pooled)
         class_probs = F.softmax(logits, dim=1)
 
         output_dict = {"logits": logits}

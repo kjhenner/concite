@@ -1,5 +1,6 @@
 import sys
 import random
+import json
 import os
 
 input_file = sys.argv[1]
@@ -7,6 +8,8 @@ train_prop = float(sys.argv[2])
 
 with open(input_file) as f:
     lines = f.readlines()
+
+lines = [line for line in lines if json.loads(line).get('abstract') and len(json.loads(line).get('graph_vector'))]
 
 random.shuffle(lines) 
 line_count = len(lines)

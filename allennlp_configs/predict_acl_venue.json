@@ -1,5 +1,6 @@
 {
-  "dataset_reader": { "type": "pubmed_document_dataset_reader",
+  "dataset_reader": {
+    "type": "aclarc_dataset_reader",
     "token_indexers": {
       "bert": {
         "type": "bert-pretrained",
@@ -9,14 +10,16 @@
       }
     }
   },
-  "train_data_path": "/shared/1/projects/concite/data/train_pubmed_n2v.jsonl",
-  "validation_data_path": "/shared/1/projects/concite/data/dev_pubmed_n2v.jsonl",
-  "test_data_path": "/shared/1/projects/concite/data/test_pubmed_n2v.jsonl",
-  "evaluate_on_test": false,
+  "train_data_path": "/shared/1/projects/concite/data/train_acl_n2v.jsonl",
+  "validation_data_path": "/shared/1/projects/concite/data/dev_acl_n2v.jsonl",
+  "test_data_path": "/shared/1/projects/concite/data/test_acl_n2v.jsonl",
+  "evaluate_on_test": true,
   "model": {
     "type": "venue_classifier",
-    "verbose_metrics": false,
+    "verbose_metrics": true,
+    "use_graph_vector": false,
     "graph_vector_dim": 128,
+    "dropout": 0.5,
     "text_field_embedder": {
       "allow_unmatched_keys": true,
       "embedder_to_indexer_map": {
@@ -26,7 +29,7 @@
         "bert": {
           "type": "bert-pretrained",
           "pretrained_model": std.extVar("BERT_WEIGHTS"),
-          "requires_grad": false,
+          "requires_grad": "all",
           "top_layer_only": true
         }
       }
