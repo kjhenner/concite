@@ -1,0 +1,40 @@
+{
+  "dataset_reader": {
+    "type": "aclarc_trace_dataset_reader"
+  },
+  "train_data_path": "/shared/0/datasets/ACL-ARC/navigation/arc-sessions.with-ids.txt",
+  "validation_data_path": "/shared/0/datasets/ACL-ARC/navigation/arc-sessions.with-ids.txt",
+  "test_data_path": "/shared/0/datasets/ACL-ARC/navigation/arc-sessions.with-ids.txt",
+  "evaluate_on_test": true,
+  "model": {
+    "type": "language_model",
+    "text_field_embedder": {
+      "token_embedders": {
+        "tokens": {
+          "type": "embedding",
+          "embedding_dim": 256
+        }
+      }
+    },
+    "contextualizer": {
+      "type": "lstm",
+      "input_size": 256,
+      "hidden_size": 256
+    }
+  },
+  "iterator": {
+    "type": "bucket",
+    "sorting_keys": [["source", "num_tokens"]],
+    "batch_size": 8,
+    "cache_instances": true
+  },
+  "trainer": {
+    "num_epochs": 10,
+    "cuda_device": 6,
+    "optimizer": {
+      "type": "dense_sparse_adam"
+    },
+    "should_log_learning_rate": true
+  }
+}
+
