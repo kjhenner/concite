@@ -15,14 +15,14 @@
           "vocab_namespace": "tokens",
           "pretrained_file": "/shared/1/projects/concite/data/acl_n2v.txt",
           "embedding_dim": 128,
-          "trainable": true
+          "trainable": false
         }
       }
     },
     "contextualizer": {
       "type": "lstm",
       "input_size": 128,
-      "hidden_size": 10
+      "hidden_size": 20
     }
   },
   "iterator": {
@@ -32,10 +32,11 @@
     "cache_instances": true
   },
   "trainer": {
-    "num_epochs": 10,
+    "num_epochs": 20,
     "cuda_device": 6,
     "optimizer": {
-      "type": "dense_sparse_adam"
+      "type": "dense_sparse_adam",
+      "lr": 1e-3
     },
     "should_log_learning_rate": true
   }
