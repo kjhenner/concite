@@ -2,9 +2,9 @@
   "dataset_reader": {
     "type": "aclarc_trace_dataset_reader"
   },
-  "train_data_path": "/shared/0/datasets/ACL-ARC/navigation/arc-sessions.with-ids.txt",
-  "validation_data_path": "/shared/0/datasets/ACL-ARC/navigation/arc-sessions.with-ids.txt",
-  "test_data_path": "/shared/0/datasets/ACL-ARC/navigation/arc-sessions.with-ids.txt",
+  "train_data_path": "data/train_arc-sessions.with-ids.txt",
+  "validation_data_path": "data/dev_arc-sessions.with-ids.txt",
+  "test_data_path": "data/dev_arc-sessions.with-ids.txt",
   "evaluate_on_test": true,
   "model": {
     "type": "language_model",
@@ -12,14 +12,17 @@
       "token_embedders": {
         "tokens": {
           "type": "embedding",
-          "embedding_dim": 256
+          "vocab_namespace": "tokens",
+          "pretrained_file": "/shared/1/projects/concite/data/acl_n2v.txt",
+          "embedding_dim": 128,
+          "trainable": true
         }
       }
     },
     "contextualizer": {
       "type": "lstm",
-      "input_size": 256,
-      "hidden_size": 256
+      "input_size": 128,
+      "hidden_size": 10
     }
   },
   "iterator": {
