@@ -8,13 +8,16 @@ import os
 
 class Node2VecEmb:
 
-    def __init__(self, edges, l, d, p, q, verbose=True, name='emb', use_cache=True):
+    def __init__(self, edges, l, d, p, q, ow=False, verbose=True, name='emb', use_cache=True):
 
         self.verbose = verbose
         nodes = list(set([node for edge in edges for node in edge]))
         self.idx_to_node = dict(enumerate(nodes))
         self.node_to_idx = dict([(node, i) for i, node in enumerate(nodes)])
-        out_path = os.path.abspath('{}_{}_{}_{}_{}.emb'.format(name, l, d, p, q))
+        ext = 'emb'
+        if ow:
+            ext = 'walks'
+        out_path = os.path.abspath('{}_{}_{}_{}_{}.{}'.format(name, l, d, p, q, ext))
 
         if not os.path.exists(out_path) or not use_cache:
             with NamedTemporaryFile(mode='w') as f:
@@ -32,10 +35,17 @@ class Node2VecEmb:
                         '-d:{}'.format(d),
                         '-p:{}'.format(p),
                         '-q:{}'.format(q)]
+                if ow:
+                    args.append('-ow')
                 p = Popen(args, stdout=PIPE)
                 if self.verbose:
+                    print(args)
+                if self.verbose:
                     print(p.communicate()[0].decode('utf-8'))
-        self.read_embeddings(out_path)
+        if ow:
+            self.read_walks(out_path)
+        else:
+            self.read_embeddings(out_path)
 
     def edge_to_string(self, edge):
         return '{}\t{}'.format(*map(self.node_to_idx.get, edge))
@@ -61,3 +71,12 @@ class Node2VecEmb:
         if self.verbose:
             print("Done reading node embeddings")
             print("Read {} embeddings".format(len(self.array)))
+
+    def read_walks(self, path):
+        self.walks = []
+        if self.verbose:
+            print("Reading walks...")
+        with open(path) as f:
+            self.walks = [[self.idx_to_node.get(int(idx)) for idx in line.split()] for line in f.readlines()]
+        if self.verbose:
+            print("Done reading walks")

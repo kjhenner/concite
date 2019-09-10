@@ -9,7 +9,8 @@ train_prop = float(sys.argv[2])
 with open(input_file) as f:
     lines = f.readlines()
 
-lines = [line for line in lines if json.loads(line).get('abstract') and len(json.loads(line).get('graph_vector'))]
+#lines = [line for line in lines if json.loads(line).get('abstract') and len(json.loads(line).get('graph_vector'))]
+lines = [line for line in lines if len(line.split()) > 1]
 
 random.shuffle(lines) 
 line_count = len(lines)

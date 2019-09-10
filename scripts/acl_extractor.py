@@ -140,21 +140,32 @@ class AclExtractor:
         with jsonlines.open(out_path, 'w') as writer:
             writer.write_all([self.get_vertex_dict(v) for v in self.g.get_vertices()])
 
-    def write_edge_data(self, out_path):
-        with jsonlines.open(out_path, 'w') as writer:
-            writer.write_all(self.documents)
+    def write_tsv_edge_list(self, out_path):
+        with open(out_path, 'w') as f:
+            for vertex in self.g.get_vertices():
+                for neighbor in self.g.get_in_neighbors(vertex):
+                    f.write("{}\t{}\n".format(self.g.vp['paper_id'][vertex], self.g.vp['paper_id'][neighbor]))
+                for neighbor in self.g.get_out_neighbors(vertex):
+                    f.write("{}\t{}\n".format(self.g.vp['paper_id'][vertex], self.g.vp['paper_id'][neighbor]))
 
     def embed_edges(self, l=40, d=128, p=0.5, q=0.5, name='acl', use_cache=False):
         emb = Node2VecEmb(self.g.get_edges()[:, :2], l, d, p, q, name=name, use_cache=use_cache)
         for i, vec in enumerate(emb.array):
             self.g.vp.graph_vector[int(self.g.vertex(emb.vector_idx_to_node[i]))] = vec
 
+    def generate_walks(self, l=40, d=128, p=0.5, q=0.5, name='acl', use_cache=False):
+        emb = Node2VecEmb(self.g.get_edges()[:, :2], l, d, p, q, True, name=name, use_cache=use_cache)
+        print(emb.walks[0])
+        return [[self.g.vp['paper_id'][v] for v in walk] for walk in emb.walks]
+
 if __name__ == "__main__":
     json_dir = sys.argv[1]
     xml_dir  = sys.argv[2]
     workshop_map_path = sys.argv[3]
-    out_path = sys.argv[4]
+    vertex_out_path = sys.argv[4]
+    edge_out_path = sys.argv[5]
 
     extractor = AclExtractor(json_dir, xml_dir, workshop_map_path)
-    extractor.embed_edges()
-    extractor.write_vertex_data(out_path)
+    #extractor.write_tsv_edge_list(edge_out_path)
+    extractor.embed_edges(ow=True)
+    #extractor.write_vertex_data(vertex_out_path)
