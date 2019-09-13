@@ -1,0 +1,62 @@
+{
+  "dataset_reader": {
+    "type": "aclarc_trace_dataset_reader",
+    "abstract_lookup_path": "/shared/1/projects/concite/data/acl_n2v.jsonl",
+    "abstract_indexers": {
+      "bert": {
+        "type": "bert-pretrained",
+        "pretrained_model": std.extVar("BERT_VOCAB"),
+        "do_lowercase": true,
+        "use_starting_offsets": true
+      }
+    }
+  },
+  "train_data_path": "data/train_arc-sessions.with-ids.txt",
+  "validation_data_path": "data/dev_arc-sessions.with-ids.txt",
+  "test_data_path": "data/test_arc-sessions.with-ids.txt",
+  "evaluate_on_test": true,
+  "model": {
+    "type": "language_model",
+    "text_field_embedder": {
+      "allow_unmatched_keys": true,
+      "embedder_to_indexer_map": {
+        "bert": ["bert", "bert-offsets"]
+      },
+      "token_embedders": {
+        "bert": {
+          "type": "bert-pretrained",
+          "pretrained_model": std.extVar("BERT_WEIGHTS"),
+          "requires_grad": "all",
+          "top_layer_only": true
+        }
+//        "tokens": {
+//          "type": "embedding",
+//          "vocab_namespace": "tokens",
+//          "pretrained_file": "/shared/1/projects/concite/data/acl_n2v.txt",
+//          "embedding_dim": 128,
+//          "trainable": false
+//        }
+      }
+    },
+    "contextualizer": {
+      "type": "lstm",
+      "input_size": 128,
+      "hidden_size": 20
+    }
+  },
+  "iterator": {
+    "type": "bucket",
+    "sorting_keys": [["source", "num_tokens"]],
+    "batch_size": 8,
+    "cache_instances": true
+  },
+  "trainer": {
+    "num_epochs": 20,
+    "cuda_device": 6,
+    "optimizer": {
+      "type": "dense_sparse_adam",
+      "lr": 1e-3
+    },
+    "should_log_learning_rate": true
+  }
+}
