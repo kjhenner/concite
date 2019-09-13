@@ -25,6 +25,7 @@ class BertSequenceModel(Model):
             num_samples: int = None,
             dropout: float = None) -> None:
         super().__init__(vocab)
+
         self._text_field_embedder = text_field_embedder
 
         # lstm encoder uses PytorchSeq2SeqWrapper for pytorch lstm
@@ -94,14 +95,10 @@ class BertSequenceModel(Model):
 
         assert isinstance(contextual_embeddings, torch.Tensor)
 
-        print(paper_ids)
-
         # targets is like paper ids, but offset forward by 1 in the second
         # dimension.
-        targets = torch.zeros_like(paper_ids)
-        targets[:, 0:targets.size()[1] - 1] = paper_ids[:, 1:]
-
-        print(targets)
+        targets = torch.zeros_like(paper_ids['tokens'])
+        targets[:, 0:targets.size()[1] - 1] = paper_ids['tokens'][:, 1:]
 
         loss = self._compute_loss(contextual_embeddings, embeddings, targets)
         
@@ -111,7 +108,7 @@ class BertSequenceModel(Model):
         else:
             average_loss = torch.tensor(0.0).to(targets.device)
 
-        self._last_average_loss[0] = average_loss.detach().item()
+        #self._last_average_loss[0] = average_loss.detach().item()
 
         if num_targets > 0:
             return_dict.update({

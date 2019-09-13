@@ -2,6 +2,7 @@
   "dataset_reader": {
     "type": "aclarc_trace_dataset_reader",
     "abstract_lookup_path": "/shared/1/projects/concite/data/acl_n2v.jsonl",
+    "sent_len_limit": 64,
     "abstract_indexers": {
       "bert": {
         "type": "bert-pretrained",
@@ -34,16 +35,16 @@
     "contextualizer": {
       "type": "lstm",
       "input_size": 768,
-      "hidden_size": 5
+      "hidden_size": 2
     }
   },
   "iterator": {
     "type": "basic",
-    "batch_size": 8,
-    "cache_instances": true
+    "batch_size": 2,
+    "cache_instances": false
   },
   "trainer": {
-    "num_epochs": 20,
+    "num_epochs": 2,
     "cuda_device": 6,
     "optimizer": {
       "type": "dense_sparse_adam",

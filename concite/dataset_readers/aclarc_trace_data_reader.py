@@ -29,6 +29,7 @@ class AclarcTraceDatasetReader(DatasetReader):
     def __init__(self,
                  abstract_lookup_path: str,
                  lazy: bool = False,
+                 sent_len_limit: int = -1,
                  abstract_tokenizer: Tokenizer = None,
                  abstract_indexers: Dict[str, TokenIndexer] = None,
                  sequence_tokenizer: Tokenizer = None,
@@ -39,7 +40,7 @@ class AclarcTraceDatasetReader(DatasetReader):
             self.data_lookup = {
                 item['paper_id']: item for item in reader
             }
-        self.sent_len_limit = 256
+        self._sent_len_limit = sent_len_limit
         self._abstract_tokenizer = abstract_tokenizer or BertBasicWordSplitter()
         self._abstract_indexers = abstract_indexers
 
@@ -71,9 +72,11 @@ class AclarcTraceDatasetReader(DatasetReader):
                 abstracts: List[str],
                 graph_vectors: List[np.ndarray]) -> Instance:
         
-        abstracts = [self._abstract_tokenizer.split_words(abstract)[:self.sent_len_limit] for abstract in abstracts]
+        abstracts = [self._abstract_tokenizer.split_words(abstract)[:self._sent_len_limit] for abstract in abstracts]
 
-        paper_ids = self._sequence_tokenizer.tokenize(trace_seq)
+        # Joining the trace_seq back into a string makes it fit more easily
+        # into the workflow.
+        paper_ids = self._sequence_tokenizer.split_words(' '.join(trace_seq))
 
         fields = {
                 'abstracts': ListField([
