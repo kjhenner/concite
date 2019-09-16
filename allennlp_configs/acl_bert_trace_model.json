@@ -2,6 +2,8 @@
   "dataset_reader": {
     "type": "aclarc_trace_dataset_reader",
     "abstract_lookup_path": "/shared/1/projects/concite/data/acl_n2v.jsonl",
+    "sent_len_limit": 128,
+    "sequence_limit": 7,
     "abstract_indexers": {
       "bert": {
         "type": "bert-pretrained",
@@ -14,9 +16,12 @@
   "train_data_path": "data/train_arc-sessions.with-ids.txt",
   "validation_data_path": "data/dev_arc-sessions.with-ids.txt",
   "test_data_path": "data/test_arc-sessions.with-ids.txt",
+//  "train_data_path": "tests/fixtures/train_arc-sessions.with-ids.txt",
+//  "validation_data_path": "tests/fixtures/train_arc-sessions.with-ids.txt",
+//  "test_data_path": "tests/fixtures/train_arc-sessions.with-ids.txt",
   "evaluate_on_test": true,
   "model": {
-    "type": "language_model",
+    "type": "bert_sequence_model",
     "text_field_embedder": {
       "allow_unmatched_keys": true,
       "embedder_to_indexer_map": {
@@ -26,32 +31,24 @@
         "bert": {
           "type": "bert-pretrained",
           "pretrained_model": std.extVar("BERT_WEIGHTS"),
-          "requires_grad": "all",
+          "requires_grad": "11,10",
           "top_layer_only": true
         }
-//        "tokens": {
-//          "type": "embedding",
-//          "vocab_namespace": "tokens",
-//          "pretrained_file": "/shared/1/projects/concite/data/acl_n2v.txt",
-//          "embedding_dim": 128,
-//          "trainable": false
-//        }
       }
     },
     "contextualizer": {
       "type": "lstm",
-      "input_size": 128,
-      "hidden_size": 20
+      "input_size": 768,
+      "hidden_size": 4
     }
   },
   "iterator": {
-    "type": "bucket",
-    "sorting_keys": [["source", "num_tokens"]],
-    "batch_size": 8,
-    "cache_instances": true
+    "type": "basic",
+    "batch_size": 4,
+    "cache_instances": false
   },
   "trainer": {
-    "num_epochs": 20,
+    "num_epochs": 10,
     "cuda_device": 6,
     "optimizer": {
       "type": "dense_sparse_adam",

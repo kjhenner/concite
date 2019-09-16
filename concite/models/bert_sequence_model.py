@@ -1,4 +1,5 @@
 from typing import Dict, List, Tuple, Union, Optional
+from overrides import overrides
 
 import torch
 import numpy as np
@@ -19,7 +20,7 @@ from concite.training.metrics import Perplexity
 class BertSequenceModel(Model):
     
     def __init__(self,
-            vocab: Vocabulary,
+            vocab: Vocabulary, # What vocab gets assigned here?
             text_field_embedder: TextFieldEmbedder,
             contextualizer: Seq2SeqEncoder,
             num_samples: int = None,
@@ -42,6 +43,8 @@ class BertSequenceModel(Model):
             self._softmax_loss = _SoftmaxLoss(num_words=vocab.get_vocab_size(),
                                               embedding_dim=self._forward_dim)
 
+        self._BOS = torch.nn.Parameter(torch.randn(self._contextualizer.get_input_dim()))
+        self._EOS = torch.nn.Parameter(torch.randn(self._contextualizer.get_input_dim()))
 
         self._perplexity = Perplexity()
 
@@ -50,16 +53,8 @@ class BertSequenceModel(Model):
         else:
             self._dropout = lambda x: x
 
-    def _get_target_token_embeddings(self,
-                                     token_embeddings: torch.Tensor,
-                                     mask: torch.Tensor) -> torch.Tensor:
-        zero_col = token_embeddings.new_zeros(mask.size(0), 1).to(dtype=torch.bool)
-        shifted_mask = torch.cat([zero_col, mask[:, 0:-1]], dim=1)
-        return token_embeddings.masked_select(shifted_mask.unsqueeze(-1)).view(-1, self._forward_dim)
-
     def _compute_loss(self,
                       lm_embeddings: torch.Tensor,
-                      token_embeddings: torch.Tensor,
                       targets: torch.Tensor) -> torch.Tensor:
         mask = targets > 0
 
@@ -81,8 +76,7 @@ class BertSequenceModel(Model):
         Computes the loss from the batch.
         """
 
-        # Mask size is (batch size, sequence length, padded abstract length)
-        mask = get_text_field_mask(abstracts, num_wrapping_dims=2)
+        #TODO: add <BOS> and <EOS>
 
         # Embed the abstracts and retrieve <CLS> tokens for each.
         embeddings = self._text_field_embedder(abstracts)[:, :, 0, :]
@@ -91,16 +85,18 @@ class BertSequenceModel(Model):
                 embeddings, None
         )
 
+        contextual_embeddings_with_dropout = self._dropout(contextual_embeddings)
+
         return_dict = {}
 
-        assert isinstance(contextual_embeddings, torch.Tensor)
+        assert isinstance(contextual_embeddings_with_dropout, torch.Tensor)
 
         # targets is like paper ids, but offset forward by 1 in the second
         # dimension.
         targets = torch.zeros_like(paper_ids['tokens'])
         targets[:, 0:targets.size()[1] - 1] = paper_ids['tokens'][:, 1:]
 
-        loss = self._compute_loss(contextual_embeddings, embeddings, targets)
+        loss = self._compute_loss(contextual_embeddings_with_dropout, targets)
         
         num_targets = torch.sum((targets > 0).long())
         if num_targets > 0:
@@ -108,7 +104,7 @@ class BertSequenceModel(Model):
         else:
             average_loss = torch.tensor(0.0).to(targets.device)
 
-        #self._last_average_loss[0] = average_loss.detach().item()
+        perplexity = self._perplexity(average_loss)
 
         if num_targets > 0:
             return_dict.update({
@@ -123,7 +119,16 @@ class BertSequenceModel(Model):
         return_dict.update({
             'lm_embeddings': contextual_embeddings,
             'noncontextual_embeddings': embeddings,
-            'mask': mask
         })
 
         return return_dict
+
+    @overrides
+    def decode(self,
+            output_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+        perplexity = self._perplexity(output_dict['loss'])
+        output_dict['perplexity'] = perplexity
+        return output_dict
+
+    def get_metrics(self, reset: bool = False):
+                return {"perplexity": self._perplexity.get_metric(reset=reset)}
