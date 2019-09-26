@@ -9,6 +9,7 @@ sys.path.append(str(Path('.').absolute()))
 
 from concite.models.bert_sequence_model import BertSequenceModel
 from concite.dataset_readers.aclarc_trace_data_reader import AclarcTraceDatasetReader
+from concite.modules.token_embedders.mixed_embedder import MixedEmbedder
 
 class BertSequenceModelTest(ModelTestCase):
     

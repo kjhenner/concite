@@ -28,6 +28,7 @@ class AclarcTraceDatasetReader(DatasetReader):
 
     def __init__(self,
                  abstract_lookup_path: str,
+                 use_bos_eos: bool = True,
                  lazy: bool = False,
                  sent_len_limit: int = None,
                  sequence_limit: int = 15,
@@ -41,6 +42,7 @@ class AclarcTraceDatasetReader(DatasetReader):
             self.data_lookup = {
                 item['paper_id']: item for item in reader
             }
+        self._use_bos_eos = use_bos_eos
         self._sent_len_limit = sent_len_limit
         self._sequence_limit = sequence_limit
         self._split_size = 4
@@ -86,15 +88,14 @@ class AclarcTraceDatasetReader(DatasetReader):
                     stats['hop_filtered']['total_items'] += cnt
                     stats['hop_filtered']['max_length'] = max(stats['raw']['max_length'], cnt)
         stats['raw']['mean'] = float(stats['raw']['total_items'] / stats['raw']['total_sequences'])
+        print(stats)
         stats['skip_filtered']['mean'] = float(stats['skip_filtered']['total_items'] / stats['skip_filtered']['total_sequences'])
         stats['hop_filtered']['mean'] = float(stats['hop_filtered']['total_items'] / stats['hop_filtered']['total_sequences'])
         return stats
 
-
-
     @overrides
     def _read(self, file_path):
-        print(self.get_statistics(file_path))
+        #print(self.get_statistics(file_path))
         with open(file_path) as f:
             for ex in f.readlines():
                 trace_seq = ex.split()
@@ -106,40 +107,27 @@ class AclarcTraceDatasetReader(DatasetReader):
                     # For now, just skip papers outside of dataset intersection
                     # and those without abstracts.
                     if len(split_seq) > 1 and all([self.data_lookup.get(paper_id) and self.data_lookup[paper_id].get('abstract') for paper_id in split_seq]):
+                        abstracts = [self.data_lookup[paper_id].get('abstract')[:self._sent_len_limit] for paper_id in split_seq]
+                        if self._use_bos_eos:
+                            split_seq = ["<BOS>", *split_seq, "<EOS>"]
                         yield self.text_to_instance(
+                            abstracts = ["[unused0]", *abstracts, "[unused1]"],
                             trace_seq = split_seq,
-                            abstracts = [
-                                self.data_lookup.get(paper_id, {}).get('abstract')
-                                for paper_id in split_seq
-                            ],
-                            graph_vectors = [
-                                np.array(self.data_lookup.get(paper_id, {}).get('graph_vector'))
-                                for paper_id in split_seq
-                            ]
                         )
 
     @overrides
     def text_to_instance(self,
-                trace_seq: List[str],
                 abstracts: List[str],
-                graph_vectors: List[np.ndarray]) -> Instance:
+                trace_seq: List[str]) -> Instance:
         
-        abstracts = [self._abstract_tokenizer.split_words(abstract)[:self._sent_len_limit] for abstract in abstracts]
-
         # Joining the trace_seq back into a string makes it fit more easily
         # into the workflow.
         paper_ids = self._sequence_tokenizer.split_words(' '.join(trace_seq))
+        abstracts = [self._abstract_tokenizer.split_words(abstract) for abstract in abstracts]
 
         fields = {
-                'abstracts': ListField([
-		    TextField(abstract, self._abstract_indexers)
-		    for abstract in abstracts
-		]),
-                'graph_vectors': ListField([
-                    ArrayField(vec)
-                    for vec in graph_vectors
-                ]),
-                'paper_ids': TextField(paper_ids, self._sequence_indexers)
+            'paper_ids': TextField(paper_ids, self._sequence_indexers),
+            'abstracts': ListField([TextField(abstract, self._abstract_indexers) for abstract in abstracts])
         }
 
         return Instance(fields)
