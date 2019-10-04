@@ -1,0 +1,87 @@
+{
+  "dataset_reader": {
+    "type": "aclarc_trace_dataset_reader",
+    "abstract_lookup_path": "/shared-1/projects/concite/data/acl_n2v.jsonl",
+    "sent_len_limit": 128,
+    "sequence_limit": 7,
+    "abstract_indexers": {
+      "bert": {
+        "type": "bert-pretrained",
+        "pretrained_model": std.extVar("BERT_VOCAB"),
+        "do_lowercase": true,
+        "use_starting_offsets": true
+      }
+    }
+  },
+  "train_data_path": "data/train_arc-sessions.with-ids.txt",
+  "validation_data_path": "data/dev_arc-sessions.with-ids.txt",
+  "test_data_path": "data/dev_arc-sessions.with-ids.txt",
+//  "train_data_path": "tests/fixtures/train_arc-sessions.with-ids.txt",
+//  "validation_data_path": "tests/fixtures/train_arc-sessions.with-ids.txt",
+//  "test_data_path": "tests/fixtures/train_arc-sessions.with-ids.txt",
+  "evaluate_on_test": false,
+  "model": {
+    "type": "bert_sequence_model",
+    "dropout": 0.2,
+    "seq_embedder": {
+      "allow_unmatched_keys": true,
+      "embedder_to_indexer_map": {
+        "tokens": ["tokens"]
+      },
+      "token_embedders": {
+        "tokens": {
+          "type": "mixed_embedder",
+          "embedding_dim": 128,
+          "pretrained_file": "/shared-1/projects/concite/data/acl_n2v.jsonl"
+        }
+      }
+    },
+    "abstract_text_field_embedder": {
+      "allow_unmatched_keys": true,
+      "embedder_to_indexer_map": {
+        "bert": ["bert", "bert-offsets"]
+      },
+      "token_embedders": {
+        "bert": {
+          "type": "bert-pretrained",
+          "pretrained_model": std.extVar("BERT_WEIGHTS"),
+          "requires_grad": "11,10,9,8,7",
+          "top_layer_only": true
+        }
+      }
+    },
+    "contextualizer": {
+      "type": "rnn",
+      "input_size": 896,
+      "hidden_size": 256
+    }
+  },
+  "iterator": {
+    "type": "basic",
+    "batch_size": 8,
+    "cache_instances": false
+  },
+  "trainer": {
+    "num_epochs": 35,
+    "grad_clipping": 5.0,
+    "patience": 3,
+    "cuda_device": 6,
+    "validation_metric": "-perplexity",
+    //"gradient_accumulation_batch_size": 32,
+    "optimizer": {
+      "type": "bert_adam",
+      "lr": 1e-5,
+      "t_total": -1,
+      "max_grad_norm": 1.0,
+      "parameter_groups": [
+        [["bias", "LayerNorm.bias", "LayerNorm.weight", "layer_norm.weight"], {"weight_decay": 0.0}]
+      ]
+    },
+//		"learning_rate_scheduler": {
+//				"type": "slanted_triangular",
+//				"num_epochs": 35,
+//				"num_steps_per_epoch": 9949
+//		},
+    "should_log_learning_rate": true
+  }
+}
