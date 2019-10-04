@@ -26,9 +26,12 @@ class NegativeSamplingModel(Model):
                  verbose_metrics: False,
                  embedding_dim: int = 128,
                  dropout: float = 0.2,
+                 window: int = 10,
                  initializer: InitializerApplicator = InitializerApplicator(),
                  regularizer: Optional[RegularizerApplicator] = None) -> None:
         super(NegativeSamplingModel, self).__init__(vocab, regularizer)
+
+        self._window = window
 
         self.text_field_embedder = text_field_embedder
         self.dropout = torch.nn.Dropout(dropout)
@@ -38,7 +41,7 @@ class NegativeSamplingModel(Model):
         initializer(self)
 
     def _compute_loss(self,
-                      embedded: torch.Tensor) -> torch.Tensor:
+                      pair: List[torch.Tensor]) -> torch.Tensor:
 
         loss = 0
         for inst in embedded:
@@ -49,12 +52,18 @@ class NegativeSamplingModel(Model):
 
     @overrides
     def forward(self,
-                sequence: List[Dict[str, torch.LongTensor]]) -> Dict[str, torch.Tensor]:
+                walk: List[Dict[str, torch.LongTensor]]) -> Dict[str, torch.Tensor]:
 
         output_dict = {}
         embedded = self.text_field_embedder(sequence)
-
-        loss = self._compute_loss(embedded)
-        output_dict["loss"] = loss
-
+        for sentence in embedded:
+            for pos, word in sentence:
+                start = max(0, pos - self._window)
+                for pos2, word2 in enumerate(sentence[start:(pos + model.window + 1)], start):
+                    if pos2 != pos:
+                        pass
         return output_dict
+
+        #loss = self._compute_loss(embedded)
+        #output_dict["loss"] = loss
+

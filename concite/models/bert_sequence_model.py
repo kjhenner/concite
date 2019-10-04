@@ -26,11 +26,14 @@ class BertSequenceModel(Model):
             seq_embedder: TextFieldEmbedder,
             abstract_text_field_embedder: TextFieldEmbedder,
             contextualizer: Seq2SeqEncoder,
+            use_abstracts: bool = True,
             num_samples: int = None,
             dropout: float = None) -> None:
         super().__init__(vocab)
 
         self._abstract_text_field_embedder = abstract_text_field_embedder
+
+        self._use_abstracts = use_abstracts
 
         self._seq_embedder = seq_embedder
 
@@ -83,22 +86,25 @@ class BertSequenceModel(Model):
         # Embed the abstracts and retrieve <CLS> tokens for each.
         # abstracts (batch, sequence length, #tokens, dims)
 
-        #(batch, seq, dims)
-        abstract_embeddings = self._abstract_text_field_embedder(abstracts)[:, :, 0, :]
-        
-        #(batch, seq, abs_dim + n2v_dim)
-        embeddings = torch.cat([abstract_embeddings, self._seq_embedder(paper_ids)], dim=-1)
+        if self._use_abstracts:
+            #(batch, seq, dims)
+            abstract_embeddings = self._abstract_text_field_embedder(abstracts)[:, :, 0, :]
+            #(batch, seq, abs_dim + n2v_dim)
+            embeddings = torch.cat([abstract_embeddings, self._seq_embedder(paper_ids)], dim=-1)
+            # Get text field mask
+            #(batch, sequence_length, #tokens)
+            mask = get_text_field_mask(abstracts, num_wrapping_dims=1)
+            paper_mask = mask.sum(dim=-1) > 0
+            contextual_embeddings: Union[torch.Tensor, List[torch.Tensor]] = self._contextualizer(
+                    embeddings, paper_mask.long()
+            )
 
-        # Get text field mask
-
-        #(batch, sequence_length, #tokens)
-        mask = get_text_field_mask(abstracts, num_wrapping_dims=1)
-
-        paper_mask = mask.sum(dim=-1) > 0
-
-        contextual_embeddings: Union[torch.Tensor, List[torch.Tensor]] = self._contextualizer(
-                embeddings, paper_mask.long()
-        )
+        else:
+            embeddings = self._seq_embedder(paper_ids)
+            mask = get_text_field_mask(paper_ids)
+            contextual_embeddings: Union[torch.Tensor, List[torch.Tensor]] = self._contextualizer(
+                    embeddings, mask.long()
+            )
 
         contextual_embeddings_with_dropout = self._dropout(contextual_embeddings)
 

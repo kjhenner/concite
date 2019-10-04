@@ -22,65 +22,29 @@ logger = logging.getLogger(__name__)
 class NegSamplingSeqReader(DatasetReader):
     """
     Reads in a text file consisting of N2V random walks, trace data, or other
-    sequences. Return negative sampling examples with a specified ratio.
+    sequences.
     """
 
     def __init__(self,
                  lazy: bool = False,
-                 sequence_limit: int = 15,
-                 negative_k: int = 15,
                  tokenizer: Tokenizer = None,
                  indexers: Dict[str, TokenIndexer] = None
                  ) -> None:
         super().__init__(lazy)
-        self._split_size = 4
-        self._negative_k = 10
         self._tokenizer = tokenizer or JustSpacesWordSplitter()
         self._indexers = indexers or {"tokens": SingleIdTokenIndexer()}
 
-    def sample_tokens(self, token_dist, token_count):
-        tokens = []
-        for _ in range(self._negative_k):
-            rand_idx = randrange(token_count)
-            for k, v in token_dist.items():
-                if v < rand_idx:
-                    tokens += k
-                    break
-                else:
-                    rand_idx -= v
-        return tokens
-
     @overrides
     def _read(self, file_path):
-        token_dist = defaultdict(float)
         with open(file_path) as f:
             for ex in f.readlines():
-                for token in ex.split():
-                    token_dist[token] += 1
-        token_count = sum(token_dist.values())
-        with open(file_path) as f:
-            for ex in f.readlines():
-                trace_seq = ex.split()
-                u = trace_seq.pop(0)
-                pos_pairs = [' '.join((u, v)) for v in trace_seq]
-                for pos_pair in pos_pairs:
-                    neg_pairs = [' '.join((pos_pair[0], v)) for v in self.sample_tokens(token_dist, token_count)]
-                    yield self.text_to_instance(
-                            pairs = [
-                                self._tokenizer.split_words(pair)
-                                for pair in [pos_pair] + neg_pairs
-                            ]
-                        )
+                yield self.text_to_instance(
+                        walk = self._tokenizer.split_words(ex))
 
     @overrides
     def text_to_instance(self,
-                         pairs: List[str]) -> Instance:
-        
+                         walk: List[str]) -> Instance:
         fields = {
-            'sequence': ListField([
-                TextField(pair, self._indexers)
-                for pair in pairs
-            ])
+            'walk': TextField(walk, self._indexers)
         }
-
         return Instance(fields)
