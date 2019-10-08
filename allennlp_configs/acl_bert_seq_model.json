@@ -1,9 +1,9 @@
 {
   "dataset_reader": {
     "type": "aclarc_trace_dataset_reader",
-    "abstract_lookup_path": "/shared-1/projects/concite/data/acl_n2v.jsonl",
+    "text_lookup_path": "/shared-1/projects/concite/data/arc-paper-ids.tsv",
+    "embedded_text": "title",
     "sent_len_limit": 128,
-    "sequence_limit": 7,
     "abstract_indexers": {
       "bert": {
         "type": "bert-pretrained",
@@ -13,9 +13,9 @@
       }
     }
   },
-  "train_data_path": "data/train_arc-sessions.with-ids.txt",
-  "validation_data_path": "data/dev_arc-sessions.with-ids.txt",
-  "test_data_path": "data/test_arc-sessions.with-ids.txt",
+  "train_data_path": "data/train_acl_citation_sequences_raw.txt",
+  "validation_data_path": "data/dev_acl_citation_sequences_raw.txt",
+  "test_data_path": "data/test_acl_citation_sequences_raw.txt",
   "evaluate_on_test": false,
   "model": {
     "type": "bert_sequence_model",
@@ -27,9 +27,8 @@
       },
       "token_embedders": {
         "tokens": {
-          "type": "mixed_embedder",
           "embedding_dim": 128,
-          "pretrained_file": "/shared-1/projects/concite/data/acl_n2v.jsonl"
+          "pretrained_file": "data/citation_sequence_embeddings.emb"
         }
       }
     },
@@ -42,7 +41,7 @@
         "bert": {
           "type": "bert-pretrained",
           "pretrained_model": std.extVar("BERT_WEIGHTS"),
-          "requires_grad": "11",
+          "requires_grad": "11, 10, 9, 8, 7",
           "top_layer_only": true
         }
       }
@@ -50,7 +49,7 @@
     "contextualizer": {
       "type": "rnn",
       "input_size": 896,
-      "hidden_size": 32
+      "hidden_size": 256
     }
   },
   "iterator": {
@@ -59,15 +58,15 @@
     "cache_instances": false
   },
   "trainer": {
-    "num_epochs": 35,
+    "num_epochs": 55,
     "grad_clipping": 5.0,
     "patience": 3,
     "cuda_device": 6,
     "validation_metric": "-perplexity",
-    "gradient_accumulation_batch_size": 32,
+    //"gradient_accumulation_batch_size": 32,
     "optimizer": {
       "type": "bert_adam",
-      "lr": 1e-5,
+      "lr": 1e-4,
       "t_total": -1,
       "max_grad_norm": 1.0,
       "parameter_groups": [

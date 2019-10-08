@@ -1,14 +1,24 @@
 from itertools import chain
+import random
 import jsonlines
 import csv
 import sys
 import os
 
+def split_seq(seq, limit, minimum=4):
+    remainder = len(seq) % limit
+    while remainder < minimum:
+        limit -= 1
+        remainder = len(seq) % limit
+    if random.getrandbits(1):
+        return zip(*[iter(seq)]*limit)
+    else:
+        return seq[:remainder] + zip(*[iter(seq[remainder:])]*limit)
+
 if __name__ == "__main__":
     sequence_path = sys.argv[1]
     lookup_path = sys.argv[2]
     sequence_limit = int(sys.argv[3])
-    split_size = int(sys.argv[4])
     output_path = sys.argv[5]
 
     with jsonlines.open(lookup_path) as reader:
@@ -22,8 +32,6 @@ if __name__ == "__main__":
     with open(sequence_path) as f:
         for ex in f.readlines():
             trace_seq = ['<s>', *ex.split(), '</s>']
-            if len(trace_seq) > sequence_limit:
-                split_seqs = zip(*[iter(trace_seq)]*split_size)
             else:
                 split_seqs = [trace_seq]
             for split_seq in split_seqs:
