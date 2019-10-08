@@ -26,7 +26,8 @@ class AclarcTraceDatasetReader(DatasetReader):
     """
 
     def __init__(self,
-                 abstract_lookup_path: str,
+                 text_lookup_path: str,
+                 embedded_text: str = 'title',
                  use_bos_eos: bool = True,
                  lazy: bool = False,
                  sent_len_limit: int = None,
@@ -37,12 +38,19 @@ class AclarcTraceDatasetReader(DatasetReader):
                  sequence_indexers: Dict[str, TokenIndexer] = None
                  ) -> None:
         super().__init__(lazy)
-        with jsonlines.open(abstract_lookup_path) as reader:
-            self.data_lookup = {
-                item['paper_id']: item for item in reader
-            }
-            self.data_lookup['<s>'] = {'abstract':'[unused0]'}
-            self.data_lookup['</s>'] = {'abstract':'[unused1]'}
+        if embedded_text == 'title':
+            with open(text_lookup_path) as f:
+                self.data_lookup = {
+                    line[0]: {'abstract': line[2]}
+                        for line in map(lambda x: x.split('\t'), f.readlines())
+                }
+        elif embedded_text == 'abstract':
+            with jsonlines.open(text_lookup_path) as reader:
+                self.data_lookup = {
+                    item['paper_id']: item for item in reader
+                }
+        self.data_lookup['<s>'] = {'abstract':'[unused0]'}
+        self.data_lookup['</s>'] = {'abstract':'[unused1]'}
         self._sent_len_limit = sent_len_limit
         self._abstract_tokenizer = abstract_tokenizer or BertBasicWordSplitter()
         self._abstract_indexers = abstract_indexers
@@ -55,21 +63,20 @@ class AclarcTraceDatasetReader(DatasetReader):
     def _read(self, file_path):
         with open(file_path) as f:
             for ex in f.readlines():
-                for split_seq in ex.split()
-                    abstracts = [self.data_lookup[paper_id].get('abstract')[:self._sent_len_limit] for paper_id in split_seq]
-                    yield self.text_to_instance(
-                        abstracts = abstracts,
-                        trace_seq = split_seq,
-                    )
+                abstracts = [self.data_lookup[paper_id].get('abstract')[:self._sent_len_limit] for paper_id in ex.split()]
+                yield self.text_to_instance(
+                    abstracts = abstracts,
+                    trace_seq = ex,
+                )
 
     @overrides
     def text_to_instance(self,
-                abstracts: List[str],
+                abstracts: str,
                 trace_seq: List[str]) -> Instance:
         
         # Joining the trace_seq back into a string makes it fit more easily
         # into the workflow.
-        paper_ids = self._sequence_tokenizer.split_words(' '.join(trace_seq))
+        paper_ids = self._sequence_tokenizer.split_words(trace_seq)
         abstracts = [self._abstract_tokenizer.split_words(abstract) for abstract in abstracts]
 
         fields = {

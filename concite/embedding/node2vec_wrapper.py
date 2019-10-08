@@ -4,7 +4,7 @@ from itertools import chain
 import numpy as np
 import csv
 import os
-
+import sys
 
 class Node2VecEmb:
 
@@ -80,3 +80,18 @@ class Node2VecEmb:
             self.walks = [[self.idx_to_node.get(int(idx)) for idx in line.split()] for line in f.readlines()]
         if self.verbose:
             print("Done reading walks")
+
+    def write_embeddings(self, path):
+        with open(path, 'w') as f:
+            f.writelines(['{} {}\n'.format(node, ' '.join([str(i) for i in self.array[i]]))
+                    for node, i, in self.node_to_vector_idx.items()])
+
+if __name__ == '__main__':
+    edge_file = sys.argv[1]
+    out_path = sys.argv[2]
+
+    with open(edge_file) as f:
+        edges = [line.split()[:2] for line in f.readlines()]
+
+    emb = Node2VecEmb(edges, 40, 128, 0.5, 0.5, use_cache=False)
+    emb.write_embeddings(out_path)
