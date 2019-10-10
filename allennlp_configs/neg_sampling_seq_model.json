@@ -1,37 +1,27 @@
 {
   "dataset_reader": {
-    "type": "neg_sampling_seq_reader"
+    "type": "skip_gram_reader"
   },
-  "train_data_path": "data/train_acl_walks",
-  "validation_data_path": "data/dev_acl_walks",
-  "test_data_path": "data/test_acl_walks",
+  "train_data_path": "data/train_acl_citation_sequences_raw.txt",
+  "validation_data_path": "data/dev_acl_citation_sequences_raw.txt",
+  "test_data_path": "data/test_acl_citation_sequences_raw.txt",
   "evaluate_on_test": false,
   "model": {
     "type": "negative_sampling_model",
     "verbose_metrics": true,
-    "text_field_embedder":{
-      "allow_unmatched_keys": true,
-      "embedder_to_indexer_map": {
-        "tokens": ["tokens"]
-      },
-      "token_embedders":{
-        "tokens": {
-          "embedding_dim": 128
-        }
-      }
-    }
+    "pretrained_file": "data/citation_sequence_embeddings.emb"
   },
   "iterator": {
     "type": "basic",
-    "batch_size": 32,
+    "batch_size": 64,
     "cache_instances": false
   },
   "trainer": {
-    "num_epochs": 20,
-    "cuda_device": -1,
+    "num_epochs": 80,
+    "cuda_device": 7,
     "optimizer": {
-      "type": "dense_sparse_adam",
-      "lr": 1e-3
+      "type": "adam",
+      "lr": 1e-4
     },
     "should_log_learning_rate": true
   }
