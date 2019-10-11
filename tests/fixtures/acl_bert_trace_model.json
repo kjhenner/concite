@@ -1,7 +1,8 @@
 {
   "dataset_reader": {
     "type": "aclarc_trace_dataset_reader",
-    "abstract_lookup_path": "tests/fixtures/test_arc_abstract_dict.jsonl",
+    "text_lookup_path": "tests/fixtures/test_arc_abstract_dict.jsonl",
+    "embedded_text": "abstract",
     "sent_len_limit": 64,
     "abstract_indexers": {
       "bert": {
