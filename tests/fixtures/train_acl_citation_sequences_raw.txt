@@ -1,0 +1,9 @@
+<s> External_361 External_762 External_762 External_762 D10-1076 External_1344 External_1345
+External_1347 External_3047 External_3163 P06-2093 W12-2702 External_8193 External_7277 External_1344 External_1345 External_3047 External_3163 External_28438 External_49181 External_1345 External_49179
+External_1345 External_1345 External_1345 External_7537 External_3667 N03-1017 P03-1021 External_1345 External_49180 External_365 W04-3250 External_1345 External_49179 External_49181 </s>
+<s> External_99325 External_20043 External_67326 External_859 W02-1011 External_6713 External_14237 External_26744 S13-2052 External_99325 External_14237 S13-2088 External_4101
+<s> External_10593 External_74531 External_22198 External_74532 External_74898 External_2027 </s>
+<s> P01-1066 External_12819 External_1476 External_20055 External_40229 P00-1020 External_20055 External_1476 External_1476 External_2292 C00-1054 External_14758 External_28273 External_25555
+<s> External_43228 External_9828 External_21778 External_43227 </s>
+<s> External_1172 External_1172 External_42879 External_9065 J12-3005 J12-3005 P09-3001 External_28100 W09-3716 External_53270 J03-2004 J12-3005 External_22472 External_26740
+<s> External_1707 W08-1107 External_2912 External_64319

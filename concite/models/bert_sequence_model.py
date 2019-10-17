@@ -1,5 +1,6 @@
 from typing import Dict, List, Tuple, Union, Optional
 from overrides import overrides
+from collections import defaultdict
 
 import torch
 import numpy as np
@@ -11,12 +12,48 @@ from allennlp.modules import TextFieldEmbedder
 from allennlp.modules.token_embedders import TokenEmbedder
 from allennlp.modules.sampled_softmax_loss import SampledSoftmaxLoss
 from allennlp.modules.seq2seq_encoders import Seq2SeqEncoder
+from allennlp.nn import util
 from allennlp.nn.util import get_text_field_mask
-from allennlp.models.language_model import _SoftmaxLoss
+#from allennlp.models.language_model import _SoftmaxLoss
 from concite.modules.token_embedders.mixed_embedder import MixedEmbedder
 
+from concite.training.metrics import *
 # Borrowed from later release of AllenNLP
 from concite.training.metrics import Perplexity
+
+
+class _SoftmaxLoss(torch.nn.Module):
+    """
+    Given some embeddings and some targets, applies a linear layer
+    to create logits over possible words and then returns the
+    negative log likelihood.
+    """
+
+    def __init__(self,
+                 num_words: int,
+                 embedding_dim: int) -> None:
+        super().__init__()
+
+        self.softmax_w = torch.nn.Parameter(
+            torch.randn(embedding_dim, num_words) / np.sqrt(embedding_dim)
+        )
+        self.softmax_b = torch.nn.Parameter(torch.zeros(num_words))
+
+    def forward(self,
+                embeddings: torch.Tensor,
+                targets: torch.Tensor) -> torch.Tensor:
+
+        # embeddings is size (n, embedding_dim)
+        # targets is (batch_size, ) with the correct class id
+        # Does not do any count normalization / divide by batch size
+        probs = torch.nn.functional.log_softmax(torch.matmul(embeddings, self.softmax_w) + self.softmax_b, dim=-1)
+
+        return torch.nn.functional.nll_loss(probs, targets.long(), reduction="sum")
+
+    def probs(self,
+              embeddings: torch.Tensor) -> torch.Tensor:
+
+        return torch.nn.functional.log_softmax(torch.matmul(embeddings, self.softmax_w) + self.softmax_b, dim=1)
 
 @Model.register('bert_sequence_model')
 class BertSequenceModel(Model):
@@ -54,6 +91,10 @@ class BertSequenceModel(Model):
             self._softmax_loss = _SoftmaxLoss(num_words=vocab.get_vocab_size(),
                                               embedding_dim=self._forward_dim)
 
+        self._n_list = [1, 5, 10, 25]
+        self._recall_at_n = {}
+        for n in self._n_list:
+            self._recall_at_n[n] = RecallAtN(n)
         self._perplexity = Perplexity()
 
         if dropout:
@@ -64,14 +105,28 @@ class BertSequenceModel(Model):
     def _compute_loss(self,
                       lm_embeddings: torch.Tensor,
                       targets: torch.Tensor) -> torch.Tensor:
+
+        # Because the targets are offset by 1, we re-mask to
+        # remove the final 0 in the targets
         mask = targets > 0
-
         non_masked_targets = targets.masked_select(mask) - 1
-
         non_masked_embeddings = lm_embeddings.masked_select(
                 mask.unsqueeze(-1)).view(-1, self._forward_dim)
 
         return self._softmax_loss(non_masked_embeddings, non_masked_targets)
+
+    def _compute_probs(self,
+                      lm_embeddings: torch.Tensor,
+                      targets: torch.Tensor) -> torch.Tensor:
+
+        # Because the targets are offset by 1, we re-mask to
+        # remove the final 0 in the targets
+        mask = targets > 0
+        non_masked_targets = targets.masked_select(mask) - 1
+        non_masked_embeddings = lm_embeddings.masked_select(
+                mask.unsqueeze(-1)).view(-1, self._forward_dim)
+
+        return self._softmax_loss.probs(non_masked_embeddings)
 
     def num_layers(self) -> int:
         return self_contextualizer.num_layers + 1
@@ -87,8 +142,10 @@ class BertSequenceModel(Model):
         # abstracts (batch, sequence length, #tokens, dims)
 
         if self._use_abstracts:
+
             #(batch, seq, dims)
             abstract_embeddings = self._abstract_text_field_embedder(abstracts)[:, :, 0, :]
+
             #(batch, seq, abs_dim + n2v_dim)
             embeddings = torch.cat([abstract_embeddings, self._seq_embedder(paper_ids)], dim=-1)
             # Get text field mask
@@ -127,6 +184,9 @@ class BertSequenceModel(Model):
 
         perplexity = self._perplexity(average_loss)
 
+        if not self.training:
+            self.get_recall_at_n(contextual_embeddings, targets)
+
         if num_targets > 0:
             return_dict.update({
                 'loss': average_loss,
@@ -139,17 +199,30 @@ class BertSequenceModel(Model):
 
         return_dict.update({
             'lm_embeddings': contextual_embeddings,
+            'lm_targets': targets,
             'noncontextual_embeddings': embeddings,
         })
 
         return return_dict
 
-    @overrides
-    def decode(self,
-            output_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
-        perplexity = self._perplexity(output_dict['loss'])
-        output_dict['perplexity'] = perplexity
-        return output_dict
+    def get_recall_at_n(self, embeddings, targets):
+        top_n = []
+        for embeddings, targets in zip(embeddings.detach(), targets.detach()):
+            probs = self._compute_probs(embeddings, targets)
+            top_probs, top_indices = probs.topk(k=max(self._n_list), dim=-1)
+            top_n.append([[self.vocab.get_token_from_index(int(i))
+                for i in top_n]
+                for top_n in top_indices])
+            for n in self._n_list:
+                self._recall_at_n[n](targets, top_indices)
+        return top_n
 
     def get_metrics(self, reset: bool = False):
-                return {"perplexity": self._perplexity.get_metric(reset=reset)}
+        metrics = {"perplexity": self._perplexity.get_metric(reset=reset)}
+        if not self.training:
+            for n in self._n_list:
+                recall = self._recall_at_n[n].get_metric(reset=reset)
+                metrics.update({
+                    "recall_at_{}".format(n) : recall
+                })
+        return metrics

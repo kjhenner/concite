@@ -1,8 +1,8 @@
 {
   "dataset_reader": {
     "type": "aclarc_trace_dataset_reader",
-    "text_lookup_path": "tests/fixtures/test_arc_abstract_dict.jsonl",
-    "embedded_text": "abstract",
+    "text_lookup_path": "/shared-1/projects/concite/data/arc-paper-ids.tsv",
+    "embedded_text": "title",
     "sent_len_limit": 64,
     "abstract_indexers": {
       "bert": {
@@ -13,9 +13,9 @@
       }
     }
   },
-  "train_data_path": "tests/fixtures/train_arc-sessions.with-ids.txt",
-  "validation_data_path": "tests/fixtures/train_arc-sessions.with-ids.txt",
-  "test_data_path": "tests/fixtures/train_arc-sessions.with-ids.txt",
+  "train_data_path": "tests/fixtures/train_acl_citation_sequences_raw.txt",
+  "validation_data_path": "tests/fixtures/train_acl_citation_sequences_raw.txt",
+  "test_data_path": "tests/fixtures/train_acl_citation_sequences_raw.txt",
   "evaluate_on_test": false,
   "model": {
     "type": "bert_sequence_model",
@@ -48,7 +48,7 @@
     "contextualizer": {
       "type": "lstm",
       "input_size": 896,
-      "hidden_size": 2
+      "hidden_size": 10
     }
   },
   "iterator": {
