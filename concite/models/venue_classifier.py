@@ -1,4 +1,3 @@
-
 from typing import Dict, Optional
 
 import allennlp
@@ -26,6 +25,7 @@ class VenueClassifier(Model):
                  verbose_metrics: False,
                  use_graph_vector: bool = True,
                  graph_vector_dim: int = 128,
+                 use_abstract: bool = False,
                  dropout: float = 0.2,
                  initializer: InitializerApplicator = InitializerApplicator(),
                  regularizer: Optional[RegularizerApplicator] = None) -> None:
@@ -35,6 +35,9 @@ class VenueClassifier(Model):
         self.use_graph_vector = use_graph_vector
         self.dropout = torch.nn.Dropout(dropout)
         self.num_classes = self.vocab.get_vocab_size("labels")
+
+        if not self.use_graph_vector and not self.use_abstract:
+            raise("Graph vector and/or abstract must be used")
 
         if self.use_graph_vector:
             self.classifier_feedforward = torch.nn.Linear(self.text_field_embedder.get_output_dim() + graph_vector_dim, self.num_classes)
