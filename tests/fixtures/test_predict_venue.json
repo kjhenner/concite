@@ -1,6 +1,6 @@
 {
   "dataset_reader": {
-    "type": "pubmed_document_dataset_reader",
+    "type": "aclarc_dataset_reader",
     "token_indexers": {
       "bert": {
         "type": "bert-pretrained",
@@ -10,14 +10,28 @@
       }
     }
   },
-  "train_data_path": "tests/fixtures/n2v_pubmed_articles.jsonl",
-  "validation_data_path": "tests/fixtures/n2v_pubmed_articles.jsonl",
-  "test_data_path": "tests/fixtures/n2v_pubmed_articles.jsonl",
+  "train_data_path": "tests/fixtures/acl_n2v.jsonl",
+  "validation_data_path": "tests/fixtures/acl_n2v.jsonl",
+  "test_data_path": "tests/fixtures/acl_n2v.jsonl",
   "evaluate_on_test": false,
   "model": {
     "type": "venue_classifier",
-    "graph_vector_dim": 128,
-    "verbose_metrics": false,
+    "verbose_metrics": true,
+    "use_node_vector": true,
+    "use_abstract": true,
+    "dropout": 0.2,
+    "classifier_feedforward": {
+      "input_dim": 1152,
+      "num_layers": 2,
+      "hidden_dims": [500, 2],
+      "activations": ["relu", "linear"],
+      "dropout": [0.2, 0.0]
+    },
+    "node_embedder": {
+      "type": "embedding",
+      "embedding_dim": 384,
+      "vocab_namespace": "paper_id_labels"
+    },
     "text_field_embedder": {
       "allow_unmatched_keys": true,
       "embedder_to_indexer_map": {
@@ -27,7 +41,7 @@
         "bert": {
           "type": "bert-pretrained",
           "pretrained_model": std.extVar("BERT_WEIGHTS"),
-          "requires_grad": false,
+          "requires_grad": "all",
           "top_layer_only": true
         }
       }
@@ -40,7 +54,7 @@
     "cache_instances": true
   },
   "trainer": {
-    "num_epochs": 2,
+    "num_epochs": 1,
     "grad_clipping": 5.0,
     "patience": 3,
     "validation_metric": "+average_F1",
@@ -49,10 +63,11 @@
       "type": "bert_adam",
       "lr": 1e-5,
       "t_total": -1,
-      "max_grad_norm": 1.0
-      //"parameter_groups": [
-        //[["bias", "LayerNorm.bias", "LayerNorm.weight", "layer_norm.weight"], {"weight_decay": 0.0}]
-      //]
+      "max_grad_norm": 1.0,
+      //"weight_decay": 0.01,
+      "parameter_groups": [
+        [["bias", "LayerNorm.bias", "LayerNorm.weight", "layer_norm.weight"], {"weight_decay": 0.0}]
+      ]
     },
     "should_log_learning_rate": true
   }

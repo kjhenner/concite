@@ -1,6 +1,8 @@
 {
   "dataset_reader": {
     "type": "aclarc_dataset_reader",
+    "workshop_path": "/shared-1/projects/concite/data/workshop-alignments.tsv",
+    "venues": "workshops",
     "token_indexers": {
       "bert": {
         "type": "bert-pretrained",
@@ -10,16 +12,29 @@
       }
     }
   },
-  "train_data_path": "/shared/1/projects/concite/data/train_acl_n2v.jsonl",
-  "validation_data_path": "/shared/1/projects/concite/data/dev_acl_n2v.jsonl",
-  "test_data_path": "/shared/1/projects/concite/data/test_acl_n2v.jsonl",
-  "evaluate_on_test": true,
+  "train_data_path": "/shared-1/projects/concite/data/train_acl_n2v.jsonl",
+  "validation_data_path": "/shared-1/projects/concite/data/dev_acl_n2v.jsonl",
+  "test_data_path": "/shared-1/projects/concite/data/test_acl_n2v.jsonl",
+  "evaluate_on_test": false,
   "model": {
     "type": "venue_classifier",
     "verbose_metrics": true,
-    "use_graph_vector": false,
-    "graph_vector_dim": 128,
-    "dropout": 0.5,
+    "use_node_vector": true,
+    "use_abstract": true,
+    "dropout": 0.2,
+    "classifier_feedforward": {
+      "input_dim": 1152,
+      "num_layers": 2,
+      "hidden_dims": [200, 10],
+      "activations": ["relu", "linear"],
+      "dropout": [0.2, 0.0]
+    },
+    "node_embedder": {
+      "type": "embedding",
+      "embedding_dim": 384,
+      "pretrained_file": "/shared-1/projects/concite/data/combined_40_384_0.5_0.5_0.1.emb",
+      "vocab_namespace": "paper_id_labels"
+    },
     "text_field_embedder": {
       "allow_unmatched_keys": true,
       "embedder_to_indexer_map": {
@@ -29,7 +44,7 @@
         "bert": {
           "type": "bert-pretrained",
           "pretrained_model": std.extVar("BERT_WEIGHTS"),
-          "requires_grad": "all",
+          "requires_grad": "11",
           "top_layer_only": true
         }
       }
@@ -38,21 +53,21 @@
   "iterator": {
     "type": "bucket",
     "sorting_keys": [["abstract", "num_tokens"]],
-    "batch_size": 8,
+    "batch_size": 16,
     "cache_instances": true
   },
   "trainer": {
-    "num_epochs": 10,
+    "num_epochs": 80,
     "grad_clipping": 5.0,
-    "patience": 3,
+    "patience": 10,
     "validation_metric": "+average_F1",
-    "cuda_device": 6,
+    "cuda_device": 7,
     "optimizer": {
       "type": "bert_adam",
       "lr": 1e-5,
       "t_total": -1,
       "max_grad_norm": 1.0,
-      //"weight_decay": 0.01,
+      "weight_decay": 0.01,
       "parameter_groups": [
         [["bias", "LayerNorm.bias", "LayerNorm.weight", "layer_norm.weight"], {"weight_decay": 0.0}]
       ]
