@@ -8,7 +8,7 @@ import sys
 
 class Node2VecEmb:
 
-    def __init__(self, edges, l, d, p, q, ow=False, verbose=True, name='emb', use_cache=True):
+    def __init__(self, edges, l, d, p, q, w=False, ow=False, verbose=True, name='emb', use_cache=True):
 
         self.verbose = verbose
         nodes = list(set([node for edge in edges for node in edge]))
@@ -23,8 +23,10 @@ class Node2VecEmb:
             with NamedTemporaryFile(mode='w') as f:
                 if self.verbose:
                     print("Writing edge data for {} edges to {}...".format(len(edges), f.name))
-                
-                f.write('\n'.join(["{}\t{}".format(*map(self.node_to_idx.get, edge)) for edge in edges]))
+                if w:
+                    f.write('\n'.join(["{}\t{}\t{}".format(*map(self.node_to_idx.get, edge)) for edge in edges]))
+                else:
+                    f.write('\n'.join(["{}\t{}".format(*map(self.node_to_idx.get, edge)) for edge in edges]))
                 f.flush()
                 
                 edge_path = f.name
@@ -37,6 +39,8 @@ class Node2VecEmb:
                         '-q:{}'.format(q)]
                 if ow:
                     args.append('-ow')
+                if w:
+                    args.append('-w')
                 p = Popen(args, stdout=PIPE)
                 if self.verbose:
                     print(args)
@@ -91,7 +95,7 @@ if __name__ == '__main__':
     out_path = sys.argv[2]
 
     with open(edge_file) as f:
-        edges = [line.split()[:2] for line in f.readlines()]
+        edges = [line.split() for line in f.readlines()]
 
     emb = Node2VecEmb(edges, 40, 128, 0.5, 0.5, use_cache=False)
     emb.write_embeddings(out_path)

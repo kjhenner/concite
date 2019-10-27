@@ -12,10 +12,10 @@ from concite.dataset_readers.pubmed_document_dataset_reader import PubmedDocumen
 
 class TestDatasetReader(AllenNlpTestCase):
 
-    def test_read_from_pubmed_file(self):
-        reader = PubmedDocumentDatasetReader()
-        instances = ensure_list(reader.read('tests/fixtures/n2v_pubmed_articles.jsonl'))
-        assert isinstance(instances, list)
+#    def test_read_from_pubmed_file(self):
+#        reader = PubmedDocumentDatasetReader()
+#        instances = ensure_list(reader.read('tests/fixtures/n2v_pubmed_articles.jsonl'))
+#        assert isinstance(instances, list)
 
     def test_read_from_aclarc_file(self):
         reader = AclarcDocDatasetReader()
