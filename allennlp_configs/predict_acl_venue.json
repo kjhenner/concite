@@ -20,10 +20,10 @@
     "type": "venue_classifier",
     "verbose_metrics": true,
     "use_node_vector": true,
-    "use_abstract": true,
+    "use_abstract": false,
     "dropout": 0.2,
     "classifier_feedforward": {
-      "input_dim": 1152,
+      "input_dim": std.parseInt(std.extVar("INPUT_DIM")),
       "num_layers": 2,
       "hidden_dims": [200, 10],
       "activations": ["relu", "linear"],
@@ -31,8 +31,8 @@
     },
     "node_embedder": {
       "type": "embedding",
-      "embedding_dim": 384,
-      "pretrained_file": "/shared-1/projects/concite/data/combined_40_384_0.5_0.5_0.1.emb",
+      "embedding_dim": std.parseInt(std.extVar("EMBEDDING_DIM")),
+      "pretrained_file": std.extVar("PRETRAINED_FILE"),
       "vocab_namespace": "paper_id_labels"
     },
     "text_field_embedder": {
