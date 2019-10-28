@@ -29,31 +29,26 @@ class AclarcDocDatasetReader(DatasetReader):
                  tokenizer: Tokenizer = None,
                  token_indexers: Dict[str, TokenIndexer] = None,
                  venues: Union[List[str], str] = 'all',
+                 top_n_workshops: int = 10,
                  workshop_path: str = None,
                  ) -> None:
         super().__init__(lazy)
         self._tokenizer = tokenizer or BertBasicWordSplitter()
         self._token_indexers = token_indexers or {"tokens": SingleIdTokenIndexer()}
         self._venues = venues
-        self._top_workshops = [
-                "Machine Translation",
-                "Discourse and Dialogue",
-                "Chinese Language Processing",
-                "CoNLL",
-                "Proceedings of the SIGDIAL Conference",
-                "Linguistic Annotation Workshop",
-                "Innovative Use of NLP for Building Educational Applications",
-                "NLG",
-                "Proceedings of BioNLP Workshop",
-                "International Conference on Computational Semantics (IWCS)"
-                ]
         if self._venues == 'workshops':
             self._workshop_lookup = {}
+            workshop_counts = defaultdict(int)
             with open(workshop_path) as f:
                 for line in f.readlines():
                     items = line.split('\t')
+                    workshop_counts[items[1]] += len(items[2:])
                     for paper_id in items[2:]:
                         self._workshop_lookup[paper_id] = items[1]
+            workshop_counts = list(workshop_counts.items())
+            workshop_counts.sort(key=lambda x: -x[1])
+            self._top_workshops = [w[0] for w in workshop_counts[:top_n_workshops]]
+            print(self.top_workshops)
 
     @overrides
     def _read(self, file_path):

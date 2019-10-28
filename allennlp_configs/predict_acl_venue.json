@@ -3,6 +3,7 @@
     "type": "aclarc_dataset_reader",
     "workshop_path": "/shared-1/projects/concite/data/workshop-alignments.tsv",
     "venues": "workshops",
+    "top_n_workshops": std.parseInt(std.extVar("TOP_N_WORKSHOPS")),
     "token_indexers": {
       "bert": {
         "type": "bert-pretrained",
@@ -19,8 +20,8 @@
   "model": {
     "type": "venue_classifier",
     "verbose_metrics": true,
-    "use_node_vector": true,
-    "use_abstract": false,
+    "use_node_vector": std.extVar("USE_NODE_VECTOR"),
+    "use_abstract": std.extVar("USE_ABSTRACT"),
     "dropout": 0.2,
     "classifier_feedforward": {
       "input_dim": std.parseInt(std.extVar("INPUT_DIM")),
@@ -61,7 +62,7 @@
     "grad_clipping": 5.0,
     "patience": 10,
     "validation_metric": "+average_F1",
-    "cuda_device": 7,
+    "cuda_device": 6,
     "optimizer": {
       "type": "bert_adam",
       "lr": 1e-5,
