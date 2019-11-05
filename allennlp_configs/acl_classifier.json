@@ -2,6 +2,7 @@
   "dataset_reader": {
     "type": "aclarc_dataset_reader",
     "workshop_path": "/shared-1/projects/concite/data/workshop-alignments.tsv",
+    "workshop_count_path": "/shared-1/projects/concite/data/acl_n2v.jsonl",
     "venues": "workshops",
     "top_n_workshops": std.parseInt(std.extVar("TOP_N_WORKSHOPS")),
     "token_indexers": {
@@ -22,18 +23,34 @@
     "verbose_metrics": true,
     "use_node_vector": std.extVar("USE_NODE_VECTOR"),
     "use_abstract": std.extVar("USE_ABSTRACT"),
-    "dropout": 0.2,
+    "workshop_path": "/shared-1/projects/concite/data/workshop-alignments.tsv",
+    "workshop_count_path": "/shared-1/projects/concite/data/acl_n2v.jsonl",
+    "dropout": 0.3,
     "classifier_feedforward": {
       "input_dim": std.parseInt(std.extVar("INPUT_DIM")),
       "num_layers": 2,
-      "hidden_dims": [200, 10],
-      "activations": ["relu", "linear"],
-      "dropout": [0.2, 0.0]
+      "hidden_dims": [
+        std.parseInt(std.extVar("HIDDEN_DIM")),
+        std.parseInt(std.extVar("TOP_N_WORKSHOPS"))
+      ],
+      "activations": [
+        "relu",
+        "linear"
+      ],
+      "dropout": [
+        0.4,
+        0.0
+      ]
     },
     "node_embedder": {
       "type": "embedding",
       "embedding_dim": std.parseInt(std.extVar("EMBEDDING_DIM")),
       "pretrained_file": std.extVar("PRETRAINED_FILE"),
+      "vocab_namespace": "paper_id_labels"
+    },
+    "null_abstract_embedder": {
+      "type": "embedding",
+      "embedding_dim": 768,
       "vocab_namespace": "paper_id_labels"
     },
     "text_field_embedder": {
@@ -54,21 +71,22 @@
   "iterator": {
     "type": "bucket",
     "sorting_keys": [["abstract", "num_tokens"]],
-    "batch_size": 16,
+    "batch_size": 24,
     "cache_instances": true
   },
   "trainer": {
-    "num_epochs": 80,
+    "num_epochs": 100,
     "grad_clipping": 5.0,
     "patience": 10,
     "validation_metric": "+average_F1",
-    "cuda_device": 6,
+    "cuda_device": 0,
+    "gradient_accumulation_batch_size": 48,
     "optimizer": {
       "type": "bert_adam",
-      "lr": 1e-5,
+      "lr": 2e-5,
       "t_total": -1,
       "max_grad_norm": 1.0,
-      "weight_decay": 0.01,
+      "weight_decay": 0.02,
       "parameter_groups": [
         [["bias", "LayerNorm.bias", "LayerNorm.weight", "layer_norm.weight"], {"weight_decay": 0.0}]
       ]
