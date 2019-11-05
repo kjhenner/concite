@@ -1,5 +1,5 @@
 HIDDEN_DIM=$1
-TOP_N_WORKSHOPS=$2
+TOP_N_AUTHORS=$2
 USE_ABSTRACT=$3
 USE_NODE_VECTOR=$4
 
@@ -14,13 +14,13 @@ echo $HIDDEN_DIM
 EMBEDDING_DIM=384
 COMBINED_SIZE=1152
 
-DATA_ROOT="/shared-1/projects/concite/"
+DATA_ROOT="/shared-1/projects/concite/authors/"
 
 SERIALIZATION_DIR_NAME=serialization_"$HIDDEN_DIM"
 
 export USE_ABSTRACT=$USE_ABSTRACT
 export USE_NODE_VECTOR=$USE_NODE_VECTOR
-export TOP_N_WORKSHOPS=$TOP_N_WORKSHOPS
+export TOP_N_AUTHORS=$TOP_N_AUTHORS
 export HIDDEN_DIM=$HIDDEN_DIM
 
 EMB_SUFFIX="$EMB_TYPE"_"$EMB_L"_"$EMBEDDING_DIM"_"$EMB_P"_"$EMB_Q"
@@ -29,14 +29,14 @@ if [ "$EMB_TYPE" == "combined" ]; then
 fi
 
 if [ "$USE_ABSTRACT" == "true" ] && [ "$USE_NODE_VECTOR" == "true" ]; then
-    SERIALIZATION_DIR="$DATA_ROOT"/"$SERIALIZATION_DIR_NAME"/"$TOP_N_WORKSHOPS"_workshop_abstract_n2v_"$EMB_SUFFIX"
+    SERIALIZATION_DIR="$DATA_ROOT"/"$SERIALIZATION_DIR_NAME"/"$TOP_N_AUTHORS"_workshop_abstract_n2v_"$EMB_SUFFIX"
 elif [ "$USE_ABSTRACT" == "true" ]; then
-    SERIALIZATION_DIR="$DATA_ROOT"/"$SERIALIZATION_DIR_NAME"/"$TOP_N_WORKSHOPS"_workshop_abstract
+    SERIALIZATION_DIR="$DATA_ROOT"/"$SERIALIZATION_DIR_NAME"/"$TOP_N_AUTHORS"_workshop_abstract
 else
   if [ "$EMB_TYPE" == "combined" ]; then
-    SERIALIZATION_DIR="$DATA_ROOT"/"$SERIALIZATION_DIR_NAME"/"$TOP_N_WORKSHOPS"_workshop_n2v_"$EMB_SUFFIX"
+    SERIALIZATION_DIR="$DATA_ROOT"/"$SERIALIZATION_DIR_NAME"/"$TOP_N_AUTHORS"_workshop_n2v_"$EMB_SUFFIX"
   else
-    SERIALIZATION_DIR="$DATA_ROOT"/"$SERIALIZATION_DIR_NAME"/"$TOP_N_WORKSHOPS"_workshop_n2v_"$EMB_SUFFIX"
+    SERIALIZATION_DIR="$DATA_ROOT"/"$SERIALIZATION_DIR_NAME"/"$TOP_N_AUTHORS"_workshop_n2v_"$EMB_SUFFIX"
   fi
 fi
 
@@ -56,6 +56,6 @@ export INPUT_DIM=$COMBINED_SIZE
 
 echo Serialization DIR: "$SERIALIZATION_DIR"
 echo Vector FIle: "$PRETRAINED_FILE"
-allennlp train allennlp_configs/predict_acl_venue.json -s $SERIALIZATION_DIR -f --include-package concite
+allennlp train allennlp_configs/predict_acl_author.json -s $SERIALIZATION_DIR -f --include-package concite
 rm "$SERIALIZATION_DIR"/training_state_epoch_*
 rm "$SERIALIZATION_DIR"/model_state_epoch_*
