@@ -17,8 +17,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import label_ranking_average_precision_score
 from scipy.stats import spearmanr
 
-
-def tsne_plot(G, emb, topics, topic_keywords):
+def tsne_plot(emb, topics, topic_keywords):
     tsne = TSNE(n_components=2, random_state=0).fit_transform(emb.array)
     matplotlib.rc('font', size=3)
     fig, axes = plt.subplots(nrows=4, ncols=5)
