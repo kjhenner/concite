@@ -50,7 +50,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 #bash "$DIR"/train_venue_classifier.sh 100 10 false true combined 20 0.3 0.7 0.4 && # 65 68
 
 #bash "$DIR"/train_venue_classifier.sh 100 10 false true combined 15 0.3 0.7 0.5 && # 63 68
-#bash "$DIR"/train_venue_classifier.sh 100 10 false true combined 25 0.3 0.7 0.5 # 52 59
+bash "$DIR"/train_acl_classifier.sh 10 workshop 100 false true combined 20 0.3 0.7 0.5 # 52 59
 
 # Explore parameter space for abstract + n2v
 #bash "$DIR"/train_venue_classifier.sh 100 10 true true combined 0.5

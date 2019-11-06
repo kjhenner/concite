@@ -40,7 +40,7 @@ class AclClassifierReader(DatasetReader):
         for ex in jsonlines.open(file_path):
             yield self.text_to_instance(
                 abstract=ex['abstract'],
-                label=ex[label_field],
+                label=ex[self._label_field],
                 paper_id=ex['paper_id']
             )
 

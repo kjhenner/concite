@@ -21,8 +21,8 @@ from allennlp.training.metrics import CategoricalAccuracy, F1Measure
 from concite.training.metrics import ConfusionMatrix
 from overrides import overrides
 
-@Model.register("venue_classifier")
-class VenueClassifier(Model):
+@Model.register("acl_classifier")
+class AclClassifier(Model):
     def __init__(self, vocab: Vocabulary,
                  text_field_embedder: TextFieldEmbedder,
                  node_embedder: TokenEmbedder,
@@ -34,7 +34,7 @@ class VenueClassifier(Model):
                  dropout: float = 0.2,
                  initializer: InitializerApplicator = InitializerApplicator(),
                  regularizer: Optional[RegularizerApplicator] = None) -> None:
-        super(VenueClassifier, self).__init__(vocab, regularizer)
+        super(AclClassifier, self).__init__(vocab, regularizer)
 
         self.node_embedder = node_embedder
         self.text_field_embedder = text_field_embedder
