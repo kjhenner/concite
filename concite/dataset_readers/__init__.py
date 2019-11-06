@@ -1,1 +1,1 @@
-from concite.dataset_readers.aclarc_data_reader import AclarcDocDatasetReader
+from concite.dataset_readers.acl_classifier_reader import AclClassifierReader

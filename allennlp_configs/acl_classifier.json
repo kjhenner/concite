@@ -1,10 +1,7 @@
 {
   "dataset_reader": {
-    "type": "aclarc_dataset_reader",
-    "workshop_path": "/shared-1/projects/concite/data/workshop-alignments.tsv",
-    "workshop_count_path": "/shared-1/projects/concite/data/acl_n2v.jsonl",
-    "venues": "workshops",
-    "top_n_workshops": std.parseInt(std.extVar("TOP_N_WORKSHOPS")),
+    "type": "acl_classifier_reader",
+    "label_field": std.extVar("LABEL_FIELD"),
     "token_indexers": {
       "bert": {
         "type": "bert-pretrained",
@@ -14,24 +11,22 @@
       }
     }
   },
-  "train_data_path": "/shared-1/projects/concite/data/train_acl_n2v.jsonl",
-  "validation_data_path": "/shared-1/projects/concite/data/dev_acl_n2v.jsonl",
-  "test_data_path": "/shared-1/projects/concite/data/test_acl_n2v.jsonl",
+  "train_data_path": std.extVar("TRAINING_DATA"),
+  "validation_data_path": std.extVar("DEV_DATA"),
+  "test_data_path": std.extVar("TEST_DATA"),
   "evaluate_on_test": false,
   "model": {
-    "type": "venue_classifier",
+    "type": "acl_classifier",
     "verbose_metrics": true,
     "use_node_vector": std.extVar("USE_NODE_VECTOR"),
     "use_abstract": std.extVar("USE_ABSTRACT"),
-    "workshop_path": "/shared-1/projects/concite/data/workshop-alignments.tsv",
-    "workshop_count_path": "/shared-1/projects/concite/data/acl_n2v.jsonl",
     "dropout": 0.3,
     "classifier_feedforward": {
       "input_dim": std.parseInt(std.extVar("INPUT_DIM")),
       "num_layers": 2,
       "hidden_dims": [
         std.parseInt(std.extVar("HIDDEN_DIM")),
-        std.parseInt(std.extVar("TOP_N_WORKSHOPS"))
+        std.parseInt(std.extVar("TOP_N"))
       ],
       "activations": [
         "relu",
@@ -94,4 +89,3 @@
     "should_log_learning_rate": true
   }
 }
-
