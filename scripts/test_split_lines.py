@@ -44,7 +44,7 @@ def k_fold_split(examples, k):
         sets['validation'].append(validation)
     return sets
 
-def train_dev_test_split(examples, train_prop):
+def train_dev_test_split(examples, train_prop, input_file):
 
     dirname, basename = os.path.split(input_file)
 
@@ -56,7 +56,6 @@ def train_dev_test_split(examples, train_prop):
         'dev': examples[train_par:-test_par],
         'test': examples[-test_par:]
     }
-
 
     for k, v in split_data.items():
         print("{} counts".format(k))
@@ -104,5 +103,5 @@ if __name__ == "__main__":
         k_fold_examples = k_fold_split(examples, k)
         write_k_fold_examples(k_fold_examples, k, top_n, filter_key, input_file)
     else:
-        train_prop = int(split_type)
+        train_prop = float(split_type)
         train_dev_test_split(examples, train_prop, input_file)
