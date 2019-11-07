@@ -62,6 +62,9 @@ def get_data_lookup(path, workshop_lookup, abstract_lookup, workshop_map):
             if len(items) > 3:
                 workshop =  workshop_lookup.get(items[0][:6])
                 combined_workshop = workshop_map.get(workshop, workshop)
+                # EMNLP is too general, so exclude it
+                if combined_workshop == 'emnlp':
+                    combined_workshop = None
                 field_data = {
                     'paper_id': items[0],
                     'authors': items[-1].split(', '),
