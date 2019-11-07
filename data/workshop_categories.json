@@ -1,0 +1,100 @@
+{
+  "machine_translation": [
+    "Humans and Computer-assisted Translation",
+    "Machine Translation",
+    "Machine Translation Statistical Machine Translation and MetricsMATR",
+    "Syntax, Semantics and Structure in Statistical Translation",
+    "Hybrid Approaches to Translation (HyTra6)",
+    "Syntax and Structure in Statistical Translation",
+    "Building and Using Parallel Texts: Data Driven Machine Translation and Beyond",
+    "Speech-to-Speech Translation",
+    "Hybrid Approaches to Translation",
+    "COLING-02: Machine Translation in Asia",
+    "Medical Speech Translation",
+    "Syntax and Structure in Statistical Translation (SSST-3) at NAACL HLT",
+    "ANLP-NAACL Workshop: Embedded Machine Translation Systems",
+    "Discourse in Machine Translation",
+    "Spoken Language Translation",
+    "Data-Driven Methods in Machine Translation"
+  ],
+  "dialogue": [
+    "Discourse and Dialogue",
+    "Proceedings of the SIGDIAL Conference",
+    "Companionable Dialogue Systems",
+    "Evaluation Methodologies for Language and Dialogue Systems",
+    "Research Directions in Dialogue Processing",
+    "Dialogue in Motion"
+  ],
+  "bio_nlp": [
+    "Proceedings of BioNLP Workshop",
+    "Biomedical Natural Language Processing",
+    "Natural Language Processing in Biomedicine",
+    "Natural Language Processing in the Biomedical Domain",
+    "HLT-NAACL Workshop: Linking Biological Literature, Ontologies and Databases",
+    "Linking Biological Literature, Ontologies and Databases: Mining Biological Semantics",
+    "Current Trends in Biomedical Natural Language Processing"
+  ],
+  "natural_language_learning": [
+    "CoNLL",
+    "Fourth Conference on Computational Natural Language Learning and the Second Learning Language in Logic Workshop",
+    "Proceedings of the Seventh Conference on Natural Language Learning at HLT-NAACL",
+    "Proceedings of the Fifteenth Conference on Computational Natural Language Learning",
+    "Proceedings of the Fifteenth Conference on Computational Natural Language Learning: Shared Task",
+    "Proceedings of the Fifteenth Conference on Computational Natural Language Learning – Shared Task",
+    "Proceedings of the Fourteenth Conference on Compurational Natural Language Learning",
+    "Proceedings of the Seventeenth Conference on Computational Natural Language Learning",
+    "Proceedings of the Seventeenth Conference on Computational Natural Language Learning: Shared Task",
+    "Proceedings of the Eighteenth Conference on Computational Natural Language Learning",
+    "Proceedings of the Eighteenth Conference on Computational Natural Language Learning: Shared Task",
+    "Cognitive Aspects of Computational Language Learning"
+  ],
+  "empirical_methods": [
+    "EMNLP",
+    "Proceedings of the Conference on Empirical Methods in Natural Language Processing",
+    "Proceedings of the Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+    "Second Conference on Empirical Methods in Natural Language Processing"
+  ],
+  "nlg": [
+    "NLG",
+    "Proceedings of the Fifth International Natural Language Generation Conference",
+    "INLG'2000 Proceedings of the First International Conference on Natural Language Generation",
+    "Proceedings of the 6th International Natural Language Generation Conference",
+    "Natural Language Generation (ENLG-05)",
+    "Proceedings of the 8th International Natural Language Generation Conference (INLG)",
+    "International Natural Language Generation Conference",
+    "Monolingual Text-To-Text Generation",
+    "Eighth International Natural Language Generation Workshop",
+    "Proceedings of the UCNLG+EVAL: Language Generation and Evaluation Workshop",
+    "Proceedings of the Fourth International Natural Language Generation Conference"
+  ],
+  "semantics": [
+    "International Conference on Computational Semantics (IWCS)",
+    "the Evaluation of Systems for the Semantic Analysis of Text",
+    "Semantics in Text Processing. STEP Conference Proceedings",
+    "Semantic Evaluations: Recent Achievements and Future Directions (SEW-2009)",
+    "GEometrical Models of Natural Language Semantics",
+    "Geometrical Models of Natural Language Semantics",
+    "Inference in Computational Semantics (ICoS-5)",
+    "Semantic Parsing",
+    "COLING-02: SEMANET: Building and Using Semantic Networks",
+    "Proceedings of the Computational Lexical Semantics Workshop at HLT-NAACL",
+    "Type Theory and Natural Language Semantics (TTNLS)",
+    "Distributional Semantics and Compositionality",
+    "Automatic Information Extraction and Building of Lexical Semantic Resources for NLP Applications",
+    "Tagging Text with Lexical Semantics: Why, What, and How?",
+    "Empirical Modeling of Semantic Equivalence and Entailment",
+    "Semantic Representation of Spoken Language",
+    "Text Meaning",
+    "Relational Models of Semantics",
+    "Semantic Analysis in Social Media",
+    "Lexical Semantics and Knowledge Representation",
+    "Unsupervised and Minimally Supervised Learning of Lexical Semantics"
+  ],
+  "annotation": [
+    "Linguistic Annotation Workshop",
+    "Discourse Annotation",
+    "Frontiers in Corpus Annotations II: Pie in the Sky",
+    "Proceedings of the Workshop Frontiers in Corpus Annotation at HLT-NAACL",
+    "Linguistic Annotation: Getting the Model Right"
+  ]
+}

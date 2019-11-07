@@ -1,4 +1,5 @@
 import jsonlines
+import json
 import sys
 
 #paper_id, date, title, abstract, authors, last_author
@@ -53,19 +54,22 @@ def author_map(author):
     }
     return author_identities.get(author, author)
 
-def get_data_lookup(path, workshop_lookup, abstract_lookup):
+def get_data_lookup(path, workshop_lookup, abstract_lookup, workshop_map):
     data_lookup = {}
     with open(path) as f:
         for line in f.readlines():
             items = line.strip().split('\t')
-            if len(items) > 3 and items[2] not in titles:
+            if len(items) > 3:
+                workshop =  workshop_lookup.get(items[0][:6])
+                combined_workshop = workshop_map.get(workshop, workshop)
                 field_data = {
                     'paper_id': items[0],
                     'authors': items[-1].split(', '),
                     'last_author': author_map(items[-1].split(', ')[-1]),
                     'date': items[1],
                     'title': items[2],
-                    'workshop': workshop_lookup.get(items[0][:6]),
+                    'workshop': workshop,
+                    'combined_workshop': combined_workshop,
                     'abstract': abstract_lookup.get(items[0])
                 }
                 data_lookup[items[0]] = field_data
@@ -76,12 +80,26 @@ def serialize_data(data_lookup, out_path):
         with jsonlines.Writer(f) as writer:
             writer.write_all(data_lookup.values())
 
+def load_workshop_map(path):
+    with open(path) as f:
+        data = json.load(f)
+    ret = {}
+    for group, workshops in data.items():
+        for workshop in workshops:
+            ret[workshop] = group
+    return ret
+
+
 if __name__ == "__main__":
     abstract_path = sys.argv[1]
     workshop_path = sys.argv[2]
-    canonical_data_path = sys.argv[3]
-    out_path = sys.argv[4]
+    workshop_map_path = sys.argv[3]
+    canonical_data_path = sys.argv[4]
+    out_path = sys.argv[5]
+
     abstract_lookup = get_abstract_lookup(abstract_path)
+    workshop_map = load_workshop_map(workshop_map_path)
     workshop_lookup = get_workshop_lookup(workshop_path)
-    data_lookup = get_data_lookup(canonical_data_path, workshop_lookup, abstract_lookup)
+
+    data_lookup = get_data_lookup(canonical_data_path, workshop_lookup, abstract_lookup, workshop_map)
     serialize_data(data_lookup, out_path)

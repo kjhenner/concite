@@ -85,14 +85,14 @@ if __name__ == "__main__":
 
     examples = [ex for ex in list(jsonlines.open(input_file)) if ex['abstract']]
 
-    top_counts = get_counts(examples, filter_key)[:top_n]
+    counts = get_counts(examples, filter_key)
+    top_counts = counts[:top_n]
 
     top_values = [w[0] for w in top_counts]
     examples = [ex for ex in examples if ex[filter_key] in top_values]
 
     random.shuffle(examples) 
     example_count = len(examples)
-
 
     print("Overall counts")
     print(len(examples))
