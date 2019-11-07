@@ -1,0 +1,12 @@
+Overall counts
+3354
+('machine_translation', 612)
+('dialogue', 503)
+('natural_language_learning', 398)
+('semantics', 395)
+('nlg', 332)
+('bio_nlp', 288)
+('empirical_methods', 239)
+('annotation', 210)
+('Chinese Language Processing', 200)
+('Innovative Use of NLP for Building Educational Applications', 177)
