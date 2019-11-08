@@ -81,6 +81,7 @@ class AclClassifier(Model):
 
         if label is not None:
             loss = self.loss(logits, label)
+            output_dict["label"] = label
             output_dict["loss"] = loss
         for i in range(self.num_classes):
             metric = self.label_f1_metrics[self.vocab.get_token_from_index(index=i, namespace="labels")]
@@ -92,9 +93,14 @@ class AclClassifier(Model):
     @overrides
     def decode(self, output_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         class_probs = F.softmax(output_dict['logits'], dim=-1)
-        self.confusion_matrix(class_probs, output_dict['labels'])
-        output_dict['confusion_matrix'] = self.confusion_matrix.get_metric()
-        output_dict['class_probs'] = class_probs
+        output_dict['pred_label'] = [
+            self.vocab.get_token_from_index(index=int(np.argmax(probs)), namespace="labels")
+            for probs in class_probs.cpu()
+        ]
+        output_dict['label'] = [
+            self.vocab.get_token_from_index(index=int(label), namespace="labels")
+            for label in output_dict['label'].cpu()
+        ]
         return output_dict
 
     def get_metrics(self, reset: bool = False) -> Dict[str, float]:
