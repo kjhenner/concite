@@ -9,11 +9,11 @@ from allennlp.data import Instance, Token
 from allennlp.data.fields import TextField
 from allennlp.predictors.predictor import Predictor
 
-@Predictor.register("workshop")
-class WorkshopPredictor(Predictor):
+@Predictor.register("acl_classifier")
+class AclClassifierPredictor(Predictor):
 
     @overrides
     def predict_instance(self, instance: Instance) -> JsonDict:
         new_instance = deepcopy(instance)
         outputs = self._model.forward_on_instance(new_instance)
-        return outputs
+        return sanitize(outputs)
