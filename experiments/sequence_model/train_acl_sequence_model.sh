@@ -38,7 +38,7 @@ if [ "$EMB_TYPE" == "combined" ]; then
     EMB_SUFFIX="$EMB_SUFFIX"_"$INTENT_WT"
 fi
 
-SERIALIZATION_DIR="$DATA_ROOT"/sequence_serialization_"$HIDDEN_DIM"
+SERIALIZATION_DIR="$DATA_ROOT"/sequence_serialization_"$HIDDEN_DIM"/citations
 
 echo $USE_ABSTRACTS
 if [ "$USE_ABSTRACTS" == "true" ]; then
