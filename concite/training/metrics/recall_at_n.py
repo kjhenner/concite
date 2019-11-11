@@ -20,7 +20,7 @@ class RecallAtN(Metric):
 
     @overrides
     def __call__(self, targets, top_indices):
-        self._count += self._n
+        self._count += 1
         for target, predictions in zip(targets, top_indices[:self._n]):
             if target in predictions:
                 self._tp += 1

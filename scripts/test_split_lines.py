@@ -79,8 +79,8 @@ def get_counts(examples, key):
 if __name__ == "__main__":
     input_file = sys.argv[1]
     split_type = sys.argv[2]
-    #filter_key = sys.argv[3]
-    #top_n = int(sys.argv[4])
+    filter_key = sys.argv[3]
+    top_n = int(sys.argv[4])
 
     examples = [ex for ex in list(jsonlines.open(input_file)) if ex['abstract']]
 

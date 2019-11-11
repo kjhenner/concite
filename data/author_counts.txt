@@ -1,0 +1,40 @@
+Overall counts
+538
+('Christopher D Manning', 84)
+("Jun'ichi Tsujii", 82)
+('Dan Klein', 74)
+('Eduard Hovy', 67)
+('Yuji Matsumoto', 64)
+('Dan Roth', 61)
+('Hermann Ney', 55)
+('Mirella Lapata', 51)
+train counts
+376
+('Christopher D Manning', 60)
+("Jun'ichi Tsujii", 60)
+('Dan Klein', 58)
+('Eduard Hovy', 47)
+('Dan Roth', 46)
+('Yuji Matsumoto', 45)
+('Hermann Ney', 35)
+('Mirella Lapata', 25)
+dev counts
+82
+('Christopher D Manning', 14)
+('Eduard Hovy', 12)
+('Hermann Ney', 12)
+('Yuji Matsumoto', 12)
+('Mirella Lapata', 10)
+('Dan Klein', 8)
+("Jun'ichi Tsujii", 8)
+('Dan Roth', 6)
+test counts
+80
+('Mirella Lapata', 16)
+("Jun'ichi Tsujii", 14)
+('Christopher D Manning', 10)
+('Dan Roth', 9)
+('Eduard Hovy', 8)
+('Hermann Ney', 8)
+('Dan Klein', 8)
+('Yuji Matsumoto', 7)

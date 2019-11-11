@@ -96,5 +96,14 @@
     "Frontiers in Corpus Annotations II: Pie in the Sky",
     "Proceedings of the Workshop Frontiers in Corpus Annotation at HLT-NAACL",
     "Linguistic Annotation: Getting the Model Right"
+  ],
+  "chinese_language": [
+    "Chinese Language Processing"
+  ],
+  "educational_applications": [
+    "Innovative Use of NLP for Building Educational Applications"
+  ],
+  "multiword_expressions": [
+    "Multiword Expressions"
   ]
 }

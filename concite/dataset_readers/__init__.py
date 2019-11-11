@@ -1,1 +1,2 @@
 from concite.dataset_readers.acl_classifier_reader import AclClassifierReader
+from concite.dataset_readers.acl_sequence_model_reader import AclSequenceModelReader
