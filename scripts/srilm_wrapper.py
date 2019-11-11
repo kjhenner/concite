@@ -2,6 +2,7 @@ from subprocess import Popen, PIPE
 from tempfile import NamedTemporaryFile
 from itertools import chain
 from collections import defaultdict
+from random import shuffle
 import numpy as np
 import math
 import jsonlines
@@ -75,28 +76,32 @@ def ngram_prob(lm, ngram):
         return sum(lprobs)
     return ngram_prob(lm, tuple(ngram[1:]))
 
-def predict_sequences(test_path, lm, vocab, metrics):
+def predict_sequences(test_path, lm, vocab, metrics, unigram_only=False):
     k = max([metric.n for metric in metrics])
     with open(test_path) as f:
         sequences = [line.split() for line in f.readlines()]
     total = len(sequences)
     out = []
     top_n_counts = defaultdict(int)
-    for i, sequence in enumerate(sequences):
+    shuffle(sequences)
+    for i, sequence in enumerate(sequences[:100]):
         print("{} of {}".format(i, total))
         targets = sequence[1:]
         preds = predict_sequence(sequence, lm, vocab, k)
         for metric in metrics:
             metric(targets, preds)
-            print("{}: {}".format(metric.n, metric.get_metric()))
 
-def predict_sequence(sequence, lm, vocab, k):
+def predict_sequence(sequence, lm, vocab, k, unigram_only=False):
     return [topk(tuple(sequence[i-1:i]), lm, vocab, k)
             for i in range(1, len(sequence))]
 
-def topk(prefix, lm, vocab, k):
-    probs = np.array([ngram_prob(lm, tuple([*prefix, token]))
-            for token in vocab])
+def topk(prefix, lm, vocab, k, unigram_only=False):
+    if unigram_only:
+        probs = np.array([ngram_prob(lm, (token,))
+                for token in vocab])
+    else:
+        probs = np.array([ngram_prob(lm, tuple([*prefix, token]))
+                for token in vocab])
     ind = np.argpartition(probs, -k)[-k:]
     ind = ind[np.argsort(probs[ind])]
     return [vocab[i] for i in ind]
@@ -113,13 +118,23 @@ if __name__ == "__main__":
     bin_path = sys.argv[1]
     train_path = sys.argv[2]
     test_path = sys.argv[3]
+    metric_out_path = sys.argv[4]
+    unigram_only = sys.argv[5]
+    if unigram_only == 'true':
+        unigram_only = True
+        order = '1'
+    else:
+        unigram_only = False
+        order = '3'
 
     with NamedTemporaryFile(mode='w') as f:
         model_path = f.name
-
-        train_ngram_lm(bin_path, train_path, model_path)
-        test_ngram_lm(bin_path, test_path, model_path)
+        train_ngram_lm(bin_path, train_path, model_path, order=order)
+        test_ngram_lm(bin_path, test_path, model_path, order=order)
         vocab = get_vocab(train_path)
         lm = load_lm(model_path)
-        metrics = [recall_at_n(n) for n in [1, 5, 10, 25]]
-        predict_sequences(test_path, lm, vocab, metrics)
+        metrics = [recall_at_n(n) for n in range(1, 50)]
+        predict_sequences(test_path, lm, vocab, metrics, unigram_only)
+        with open(metric_out_path, 'w') as f:
+            for metric in metrics:
+                f.write("{}: {}\n".format(metric.n, metric.get_metric()))

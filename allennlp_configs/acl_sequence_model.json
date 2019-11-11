@@ -56,11 +56,11 @@
   },
   "iterator": {
     "type": "basic",
-    "batch_size": 8,
+    "batch_size": 16,
     "cache_instances": false
   },
   "trainer": {
-    "num_epochs": 55,
+    "num_epochs": 80,
     "grad_clipping": 5.0,
     "patience": 6,
     "cuda_device": 3,
@@ -68,7 +68,7 @@
     //"gradient_accumulation_batch_size": 32,
     "optimizer": {
       "type": "bert_adam",
-      "lr": 1e-4,
+      "lr": 2e-4,
       "t_total": -1,
       "max_grad_norm": 1.0,
       "parameter_groups": [

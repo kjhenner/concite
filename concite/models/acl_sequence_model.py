@@ -148,7 +148,7 @@ class AclSequenceModel(Model):
             embeddings = self._abstract_text_field_embedder(abstracts)[:, :, 0, :]
             mask = get_text_field_mask(abstracts, num_wrapping_dims=1)
             mask = mask.sum(dim=-1) > 0
-        elif self._use_node_vector:
+        elif self._use_node_vectors:
             embeddings = self._seq_embedder(paper_ids)
             mask = get_text_field_mask(paper_ids)
         contextual_embeddings: Union[torch.Tensor, List[torch.Tensor]] = self._contextualizer(
