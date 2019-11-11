@@ -90,7 +90,6 @@ def predict_sequences(test_path, lm, vocab, metrics):
             metric(targets, preds)
             print("{}: {}".format(metric.n, metric.get_metric()))
 
-
 def predict_sequence(sequence, lm, vocab, k):
     return [topk(tuple(sequence[i-1:i]), lm, vocab, k)
             for i in range(1, len(sequence))]
