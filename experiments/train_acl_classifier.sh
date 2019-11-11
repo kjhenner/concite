@@ -10,7 +10,8 @@ EMB_Q=$9
 INTENT_WT=${10}
 
 EMBEDDING_DIM=384
-COMBINED_SIZE=1152
+BERT_DIM=768
+INPUT_DIM=0
 
 DATA_ROOT="/shared-1/projects/concite/"
 
@@ -27,6 +28,7 @@ export USE_ABSTRACT=$USE_ABSTRACT
 export USE_NODE_VECTOR=$USE_NODE_VECTOR
 export TOP_N=$TOP_N
 export HIDDEN_DIM=$HIDDEN_DIM
+export EMBEDDING_DIM=$EMBEDDING_DIM
 export BERT_VOCAB=/home/khenner/scibert_scivocab_uncased/vocab.txt
 export BERT_WEIGHTS=/home/khenner/scibert_scivocab_uncased/weights.tar.gz
 export TRAINING_DATA=$TRAINING_DATA
@@ -42,23 +44,22 @@ SERIALIZATION_DIR="$DATA_ROOT""$SERIALIZATION_DIR_NAME"/"$TOP_N"_"$LABEL_FIELD"
 
 if [ "$USE_ABSTRACT" == "true" ]; then
     SERIALIZATION_DIR="$SERIALIZATION_DIR"_abstract
+    (( INPUT_DIM = INPUT_DIM + BERT_DIM ))
 fi
 
 if [ "$USE_NODE_VECTOR" == "true" ]; then
-    SERIALIZATION_DIR="$SERIALIZATION_DIR"_n2v_"$EMB_SUFFIX"
-fi
-
-if [ "$USE_NODE_VECTOR" == "true" ]; then
+  SERIALIZATION_DIR="$SERIALIZATION_DIR"_n2v_"$EMB_SUFFIX"
+  (( INPUT_DIM = INPUT_DIM + EMBEDDING_DIM ))
   export PRETRAINED_FILE="$DATA_ROOT"data/embeddings/"$EMB_SUFFIX".emb
 else
   export PRETRAINED_FILE=None
 fi
 
-export EMBEDDING_DIM=$EMBEDDING_DIM
-export INPUT_DIM=$COMBINED_SIZE
+export INPUT_DIM=$INPUT_DIM
 
 echo Serialization DIR: "$SERIALIZATION_DIR"
 echo Vector FIle: "$PRETRAINED_FILE"
+echo $INPUT_DIM
 allennlp train allennlp_configs/acl_classifier.json -s $SERIALIZATION_DIR -f --include-package concite &&
 rm "$SERIALIZATION_DIR"/training_state_epoch_*
 rm "$SERIALIZATION_DIR"/model_state_epoch_*

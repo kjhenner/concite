@@ -10,15 +10,15 @@ from allennlp.data import Field
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 from allennlp.data.fields import TextField, ListField, ArrayField, LabelField
 from allennlp.data.instance import Instance
-from allennlp.data.tokenizers import Tokenizer, WordTokenizer
+from allennlp.data.tokenizers import Tokenizer, WordTokenizer, Token
 from allennlp.data.tokenizers.word_splitter import JustSpacesWordSplitter
 from allennlp.data.tokenizers.word_splitter import BertBasicWordSplitter
 from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
 
 logger = logging.getLogger(__name__)
 
-@DatasetReader.register("aclarc_trace_dataset_reader")
-class AclarcTraceDatasetReader(DatasetReader):
+@DatasetReader.register("acl_sequence_model_reader")
+class AclSequenceModelReader(DatasetReader):
     """
     Reads a file containing ACL-ARC trace data and creates a corresponding
     dataset. Each trace is handled as if it were a sentence, where each visited
@@ -31,7 +31,6 @@ class AclarcTraceDatasetReader(DatasetReader):
                  use_bos_eos: bool = True,
                  lazy: bool = False,
                  sent_len_limit: int = None,
-                 sequence_limit: int = 15,
                  abstract_tokenizer: Tokenizer = None,
                  abstract_indexers: Dict[str, TokenIndexer] = None,
                  sequence_tokenizer: Tokenizer = None,
@@ -42,15 +41,16 @@ class AclarcTraceDatasetReader(DatasetReader):
             with open(text_lookup_path) as f:
                 self.data_lookup = {
                     line[0]: {'abstract': line[2]}
-                        for line in map(lambda x: x.split('\t'), f.readlines())
+                        for line in map(lambda x: x.strip().split('\t'), f.readlines()) if len(line)>2
                 }
         elif embedded_text == 'abstract':
             with jsonlines.open(text_lookup_path) as reader:
                 self.data_lookup = {
                     item['paper_id']: item for item in reader
                 }
-        self.data_lookup['<s>'] = {'abstract':'[unused0]'}
-        self.data_lookup['</s>'] = {'abstract':'[unused1]'}
+        # Add these now so we can find them in the lookup, then replace with
+        # [unused0] and [unused1] in text_to_instance method
+        self.data_lookup['<s>'] = {'abstract':'<s>'}
         self._sent_len_limit = sent_len_limit
         self._abstract_tokenizer = abstract_tokenizer or BertBasicWordSplitter()
         self._abstract_indexers = abstract_indexers
@@ -71,17 +71,23 @@ class AclarcTraceDatasetReader(DatasetReader):
 
     @overrides
     def text_to_instance(self,
-                abstracts: str,
+                abstracts: List[str],
                 trace_seq: List[str]) -> Instance:
         
         # Joining the trace_seq back into a string makes it fit more easily
         # into the workflow.
         paper_ids = self._sequence_tokenizer.split_words(trace_seq)
-        abstracts = [self._abstract_tokenizer.split_words(abstract) for abstract in abstracts]
+        tokenized_abstracts = []
+        for abstract in abstracts:
+            if abstract == '<s>':
+                tokenized_abstracts.append([Token('[unused0]')])
+            else:
+                tokenized_abstracts.append(self._abstract_tokenizer.split_words(abstract))
 
         fields = {
             'paper_ids': TextField(paper_ids, self._sequence_indexers),
-            'abstracts': ListField([TextField(abstract, self._abstract_indexers) for abstract in abstracts])
+            'abstracts': ListField([TextField(abstract, self._abstract_indexers)
+                for abstract in tokenized_abstracts])
         }
 
         return Instance(fields)

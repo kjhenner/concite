@@ -55,8 +55,8 @@ class _SoftmaxLoss(torch.nn.Module):
 
         return torch.nn.functional.log_softmax(torch.matmul(embeddings, self.softmax_w) + self.softmax_b, dim=1)
 
-@Model.register('bert_sequence_model')
-class BertSequenceModel(Model):
+@Model.register('acl_sequence_model')
+class AclSequenceModel(Model):
     
     def __init__(self,
             vocab: Vocabulary,
@@ -64,6 +64,7 @@ class BertSequenceModel(Model):
             abstract_text_field_embedder: TextFieldEmbedder,
             contextualizer: Seq2SeqEncoder,
             use_abstracts: bool = True,
+            use_node_vectors: bool = True,
             num_samples: int = None,
             dropout: float = None) -> None:
         super().__init__(vocab)
@@ -72,15 +73,14 @@ class BertSequenceModel(Model):
 
         self._use_abstracts = use_abstracts
 
+        self._use_node_vectors = use_node_vectors
+
         self._seq_embedder = seq_embedder
 
         # lstm encoder uses PytorchSeq2SeqWrapper for pytorch lstm
         self._contextualizer = contextualizer
 
         self._forward_dim = contextualizer.get_output_dim()
-
-        # Keep track of the vocab to help BOS/EOS vs. BERT abstract logic
-        self._vocab = vocab
 
         if num_samples is not None:
             self._softmax_loss = SampledSoftmaxLoss(num_words=vocab.get_vocab_size(),
@@ -138,30 +138,22 @@ class BertSequenceModel(Model):
         Computes the loss from the batch.
         """
 
-        # Embed the abstracts and retrieve <CLS> tokens for each.
-        # abstracts (batch, sequence length, #tokens, dims)
-
-        if self._use_abstracts:
-
-            #(batch, seq, dims)
-            abstract_embeddings = self._abstract_text_field_embedder(abstracts)[:, :, 0, :]
-
-            #(batch, seq, abs_dim + n2v_dim)
-            embeddings = torch.cat([abstract_embeddings, self._seq_embedder(paper_ids)], dim=-1)
-            # Get text field mask
-            #(batch, sequence_length, #tokens)
+        if self._use_abstracts and self._use_node_vectors:
+            embeddings = torch.cat([
+                self._abstract_text_field_embedder(abstracts)[:, :, 0, :],
+                self._seq_embedder(paper_ids)], dim = -1)
             mask = get_text_field_mask(abstracts, num_wrapping_dims=1)
-            paper_mask = mask.sum(dim=-1) > 0
-            contextual_embeddings: Union[torch.Tensor, List[torch.Tensor]] = self._contextualizer(
-                    embeddings, paper_mask.long()
-            )
-
-        else:
+            mask = mask.sum(dim=-1) > 0
+        elif self._use_abstracts:
+            embeddings = self._abstract_text_field_embedder(abstracts)[:, :, 0, :]
+            mask = get_text_field_mask(abstracts, num_wrapping_dims=1)
+            mask = mask.sum(dim=-1) > 0
+        elif self._use_node_vector:
             embeddings = self._seq_embedder(paper_ids)
             mask = get_text_field_mask(paper_ids)
-            contextual_embeddings: Union[torch.Tensor, List[torch.Tensor]] = self._contextualizer(
-                    embeddings, mask.long()
-            )
+        contextual_embeddings: Union[torch.Tensor, List[torch.Tensor]] = self._contextualizer(
+                embeddings, mask.long()
+        )
 
         contextual_embeddings_with_dropout = self._dropout(contextual_embeddings)
 

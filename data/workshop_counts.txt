@@ -1,0 +1,48 @@
+Overall counts
+3229
+('machine_translation', 612)
+('dialogue', 503)
+('natural_language_learning', 398)
+('semantics', 395)
+('nlg', 332)
+('bio_nlp', 288)
+('annotation', 210)
+('chinese_language', 200)
+('educational_applications', 177)
+('multiword_expressions', 114)
+train counts
+2583
+('machine_translation', 490)
+('dialogue', 378)
+('natural_language_learning', 327)
+('semantics', 320)
+('nlg', 262)
+('bio_nlp', 228)
+('annotation', 169)
+('chinese_language', 166)
+('educational_applications', 148)
+('multiword_expressions', 95)
+dev counts
+324
+('machine_translation', 59)
+('dialogue', 58)
+('nlg', 45)
+('natural_language_learning', 35)
+('semantics', 32)
+('bio_nlp', 25)
+('annotation', 22)
+('educational_applications', 18)
+('chinese_language', 17)
+('multiword_expressions', 13)
+test counts
+322
+('dialogue', 67)
+('machine_translation', 63)
+('semantics', 43)
+('natural_language_learning', 36)
+('bio_nlp', 35)
+('nlg', 25)
+('annotation', 19)
+('chinese_language', 17)
+('educational_applications', 11)
+('multiword_expressions', 6)

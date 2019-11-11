@@ -43,11 +43,6 @@
       "pretrained_file": std.extVar("PRETRAINED_FILE"),
       "vocab_namespace": "paper_id_labels"
     },
-    "null_abstract_embedder": {
-      "type": "embedding",
-      "embedding_dim": 768,
-      "vocab_namespace": "paper_id_labels"
-    },
     "text_field_embedder": {
       "allow_unmatched_keys": true,
       "embedder_to_indexer_map": {
@@ -66,7 +61,7 @@
   "iterator": {
     "type": "bucket",
     "sorting_keys": [["abstract", "num_tokens"]],
-    "batch_size": 24,
+    "batch_size": 8,
     "cache_instances": true
   },
   "trainer": {
@@ -74,8 +69,8 @@
     "grad_clipping": 5.0,
     "patience": 10,
     "validation_metric": "+average_F1",
-    "cuda_device": 0,
-    "gradient_accumulation_batch_size": 48,
+    "cuda_device": 3,
+    //"gradient_accumulation_batch_size": 48,
     "optimizer": {
       "type": "bert_adam",
       "lr": 2e-5,
