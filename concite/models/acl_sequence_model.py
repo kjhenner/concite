@@ -63,6 +63,7 @@ class AclSequenceModel(Model):
             seq_embedder: TextFieldEmbedder,
             abstract_text_field_embedder: TextFieldEmbedder,
             contextualizer: Seq2SeqEncoder,
+            calculate_recall: bool = False,
             use_abstracts: bool = True,
             use_node_vectors: bool = True,
             num_samples: int = None,
@@ -77,6 +78,7 @@ class AclSequenceModel(Model):
 
         self._seq_embedder = seq_embedder
 
+        self._calculate_recall = calculate_recall
         # lstm encoder uses PytorchSeq2SeqWrapper for pytorch lstm
         self._contextualizer = contextualizer
 
@@ -176,7 +178,7 @@ class AclSequenceModel(Model):
 
         perplexity = self._perplexity(average_loss)
 
-        if not self.training:
+        if self._calculate_recall:
             self.get_recall_at_n(contextual_embeddings, targets)
 
         if num_targets > 0:
@@ -213,7 +215,7 @@ class AclSequenceModel(Model):
 
     def get_metrics(self, reset: bool = False):
         metrics = {"perplexity": self._perplexity.get_metric(reset=reset)}
-        if not self.training:
+        if self._calculate_recall:
             for n in self._n_list:
                 recall = self._recall_at_n[n].get_metric(reset=reset)
                 metrics.update({

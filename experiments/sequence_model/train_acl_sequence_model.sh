@@ -40,13 +40,11 @@ fi
 
 SERIALIZATION_DIR="$DATA_ROOT"/sequence_serialization_"$HIDDEN_DIM"/citations
 
-echo $USE_ABSTRACTS
 if [ "$USE_ABSTRACTS" == "true" ]; then
     SERIALIZATION_DIR="$SERIALIZATION_DIR"_abstract
     (( INPUT_DIM = INPUT_DIM + BERT_DIM ))
 fi
 
-echo $USE_ABSTRACTS
 if [ "$USE_NODE_VECTORS" == "true" ]; then
     SERIALIZATION_DIR="$SERIALIZATION_DIR"_n2v_"$EMB_SUFFIX"
     (( INPUT_DIM = INPUT_DIM + EMBEDDING_DIM ))
@@ -66,6 +64,7 @@ export INPUT_DIM=$INPUT_DIM
 echo Serialization DIR: "$SERIALIZATION_DIR"
 echo Vector FIle: "$PRETRAINED_FILE"
 echo $INPUT_DIM
+echo $HIDDEN_DIM
 allennlp train allennlp_configs/acl_sequence_model.json -s $SERIALIZATION_DIR -f --include-package concite
-#rm "$SERIALIZATION_DIR"/training_state_epoch_*
-#rm "$SERIALIZATION_DIR"/model_state_epoch_*
+rm "$SERIALIZATION_DIR"/training_state_epoch_*
+rm "$SERIALIZATION_DIR"/model_state_epoch_*
