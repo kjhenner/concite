@@ -63,6 +63,7 @@ class AclSequenceModel(Model):
             seq_embedder: TextFieldEmbedder,
             abstract_text_field_embedder: TextFieldEmbedder,
             contextualizer: Seq2SeqEncoder,
+            calculate_recall: bool = False,
             use_abstracts: bool = True,
             use_node_vectors: bool = True,
             num_samples: int = None,
@@ -77,6 +78,7 @@ class AclSequenceModel(Model):
 
         self._seq_embedder = seq_embedder
 
+        self._calculate_recall = calculate_recall
         # lstm encoder uses PytorchSeq2SeqWrapper for pytorch lstm
         self._contextualizer = contextualizer
 
@@ -91,7 +93,7 @@ class AclSequenceModel(Model):
             self._softmax_loss = _SoftmaxLoss(num_words=vocab.get_vocab_size(),
                                               embedding_dim=self._forward_dim)
 
-        self._n_list = [1, 5, 10, 25]
+        self._n_list = range(1, 50)
         self._recall_at_n = {}
         for n in self._n_list:
             self._recall_at_n[n] = RecallAtN(n)
@@ -176,7 +178,7 @@ class AclSequenceModel(Model):
 
         perplexity = self._perplexity(average_loss)
 
-        if not self.training:
+        if self._calculate_recall:
             self.get_recall_at_n(contextual_embeddings, targets)
 
         if num_targets > 0:
@@ -205,13 +207,15 @@ class AclSequenceModel(Model):
             top_n.append([[self.vocab.get_token_from_index(int(i))
                 for i in top_n]
                 for top_n in top_indices])
+            mask = targets > 0
+            non_masked_targets = targets.masked_select(mask) - 1
             for n in self._n_list:
-                self._recall_at_n[n](targets, top_indices)
+                self._recall_at_n[n](non_masked_targets, top_indices)
         return top_n
 
     def get_metrics(self, reset: bool = False):
         metrics = {"perplexity": self._perplexity.get_metric(reset=reset)}
-        if not self.training:
+        if self._calculate_recall:
             for n in self._n_list:
                 recall = self._recall_at_n[n].get_metric(reset=reset)
                 metrics.update({

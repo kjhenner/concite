@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     pred_Y = clf.predict(test_X)
 
-    print(classification_report(test_Y, pred_Y, target_names = labels))
+    print(classification_report(test_Y, pred_Y, target_names = labels, digits=5))
     
     try:
         os.mkdir(serialization_dir)

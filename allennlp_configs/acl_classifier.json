@@ -69,7 +69,7 @@
     "grad_clipping": 5.0,
     "patience": 10,
     "validation_metric": "+average_F1",
-    "cuda_device": 3,
+    "cuda_device": 2,
     //"gradient_accumulation_batch_size": 48,
     "optimizer": {
       "type": "bert_adam",

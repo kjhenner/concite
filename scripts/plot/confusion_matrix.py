@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     input_path = sys.argv[1]
+    out_path = sys.argv[2]
     with open(input_path) as f:
         data = list(jsonlines.Reader(f))
 
@@ -40,4 +41,4 @@ if __name__ == "__main__":
                     ha="center", va="center",
                     color="white" if cm[i, j] > thresh else "black")
     fig.tight_layout()
-    plt.savefig("confusion_matrix.png")
+    plt.savefig(out_path)
