@@ -1,25 +1,32 @@
 import sys
 import json
 import os
+import re
 
 def to_latex_row(data, title):
+    P = list(map(float, [data[k]
+        for k in data.keys() if re.match(r'.*P', k)]))
+    mean_P = sum(P) / float(len(P))
+    R = list(map(float, [data[k]
+        for k in data.keys() if re.match(r'.*R', k)]))
+    mean_R = sum(R) / float(len(R))
     return ' & '.join(["\\textsc{" + title + "}",
-        str(data['best_validation_average_F1']),
-        str(data['best_validation_macro_F1']),
-        str(data['best_validation_accuracy'])
+        "{:.4f}".format(mean_P),
+        "{:.4f}".format(mean_R),
+        "{:.4f}".format(data['average_F1']),
+        "{:.4f}".format(data['accuracy'])
     ])
 
-def macro_average(data):
-    keys = [key for key in data.keys() if key[:15] == 'best_validation' and key[-2:] == 'F1']
-    return sum([data[key] for key in keys]) / len(keys)
+#paths = [os.path.join(dp, f)
+#        for dp, dn, filenames in os.walk(sys.argv[1])
+#        for f in filenames if os.path.splitext(f)[1] == 'out']
 
 paths = [os.path.join(dp, f)
-        for dp, dn, filenames in os.walk('/shared-1/projects/concite/serialization')
-        for f in filenames if os.path.splitext(f)[0] == 'metrics']
+        for dp, dn, filenames in os.walk(sys.argv[1])
+        for f in filenames]
 
 for path in paths:
     with open(path) as f:
         data = json.load(f)
-        data['best_validation_macro_F1'] = macro_average(data)
-        title = path.split('/')[-2]
+        title = path.split('/')[-1]
         print(to_latex_row(data, title))
