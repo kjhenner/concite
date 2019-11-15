@@ -13,7 +13,7 @@ if __name__ == "__main__":
     title="Confusion Matrix"
     y_true = [ex['label'] for ex in data]
     y_pred = [ex['pred_label'] for ex in data]
-    labels = list(set(y_true))
+    labels = sorted(list(set(y_true)))
     cm = confusion_matrix(y_true, y_pred, labels=labels)
     fig, ax = plt.subplots(dpi=300, figsize=(8, 8))
     cmap=plt.cm.Blues

@@ -12,7 +12,7 @@ import jsonlines
 def get_counts(examples, key_field):
     counts = defaultdict(int)
     for ex in examples:
-        item = ex['combined_workshop']
+        item = ex[key_field]
         if item:
             counts[item] += 1
     counts = list(counts.items())
@@ -69,5 +69,5 @@ if __name__ == "__main__":
     labels = [example[key_field] for example in examples]
     emb_matrix = [emb_lookup[example['paper_id']] for example in examples]
 
-    tsne_plot(labels, emb_matrix, out_path, 5, 2)
+    tsne_plot(labels, emb_matrix, out_path, 4, 2)
     #tsne_plot_3d(labels, emb_matrix, dates, out_path)
