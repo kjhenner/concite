@@ -21,8 +21,6 @@ TEST_DATA="$DATA_ROOT"data/acl_data/test_"$TOP_N"_"$LABEL_FIELD"_acl_data.jsonl
 
 echo $TRAINING_DATA
 
-SERIALIZATION_DIR_NAME=serialization_"$HIDDEN_DIM"
-
 export LABEL_FIELD=$LABEL_FIELD
 export USE_ABSTRACT=$USE_ABSTRACT
 export USE_NODE_VECTOR=$USE_NODE_VECTOR
@@ -40,15 +38,15 @@ if [ "$EMB_TYPE" == "combined" ]; then
   EMB_SUFFIX="$EMB_SUFFIX"_"$INTENT_WT"
 fi
 
-SERIALIZATION_DIR="$DATA_ROOT""$SERIALIZATION_DIR_NAME"/"$TOP_N"_"$LABEL_FIELD"
+SERIALIZATION_DIR="$DATA_ROOT""$LABEL_FIELD"_serialization/"$SEED"/model
 
 if [ "$USE_ABSTRACT" == "true" ]; then
-    SERIALIZATION_DIR="$SERIALIZATION_DIR"_abstract
+    SERIALIZATION_DIR="$SERIALIZATION_DIR"_BERT
     (( INPUT_DIM = INPUT_DIM + BERT_DIM ))
 fi
 
 if [ "$USE_NODE_VECTOR" == "true" ]; then
-  SERIALIZATION_DIR="$SERIALIZATION_DIR"_n2v_"$EMB_SUFFIX"
+  SERIALIZATION_DIR="$SERIALIZATION_DIR"_n2v_"$EMB_TYPE"
   (( INPUT_DIM = INPUT_DIM + EMBEDDING_DIM ))
   export PRETRAINED_FILE="$DATA_ROOT"data/embeddings/"$EMB_SUFFIX".emb
 else
@@ -59,7 +57,4 @@ export INPUT_DIM=$INPUT_DIM
 
 echo Serialization DIR: "$SERIALIZATION_DIR"
 echo Vector FIle: "$PRETRAINED_FILE"
-echo $INPUT_DIM
-allennlp train allennlp_configs/acl_classifier.json -s $SERIALIZATION_DIR -f --include-package concite &&
-rm "$SERIALIZATION_DIR"/training_state_epoch_*
-rm "$SERIALIZATION_DIR"/model_state_epoch_*
+allennlp train allennlp_configs/acl_classifier.json -s $SERIALIZATION_DIR -f --include-package concite
