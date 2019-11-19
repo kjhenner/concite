@@ -54,7 +54,7 @@
     "grad_clipping": 5.0,
     "patience": 10,
     "validation_metric": "-loss",
-    "num_serialized_models_to_keep": 2,
+    "num_serialized_models_to_keep": 1,
     "should_log_parameter_statistics": false,
     "cuda_device": 3,
     //"gradient_accumulation_batch_size": 48,

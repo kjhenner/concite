@@ -1,5 +1,5 @@
 ROOT_DIR=/shared-1/projects/concite/
-CUDA_DEVICE=2
+CUDA_DEVICE=$1
 
 for MODEL in "abstract" \
   "abstract_n2v_all_20_384_0.3_0.7" \

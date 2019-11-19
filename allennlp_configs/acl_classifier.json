@@ -1,4 +1,7 @@
 {
+  "random_seed": std.parseInt(std.extVar("SEED")),
+  "pytorch_seed": std.parseInt(std.extVar("PYTORCH_SEED")),
+  "numpy_seed": std.parseInt(std.extVar("NUMPY_SEED")),
   "dataset_reader": {
     "type": "acl_classifier_reader",
     "label_field": std.extVar("LABEL_FIELD"),
@@ -69,7 +72,8 @@
     "grad_clipping": 5.0,
     "patience": 10,
     "validation_metric": "+average_F1",
-    "cuda_device": 2,
+    "num_serialized_models_to_keep": 1,
+    "cuda_device": std.parseInt(std.extVar("CUDA_DEVICE")),
     //"gradient_accumulation_batch_size": 48,
     "optimizer": {
       "type": "bert_adam",
