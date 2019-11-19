@@ -31,7 +31,6 @@ export TRAINING_DATA=$TRAINING_DATA
 export DEV_DATA=$DEV_DATA
 export TEST_DATA=$TEST_DATA
 export PAPER_LOOKUP_PATH=$PAPER_LOOKUP_PATH
-export EMBEDDING_DIM=$EMBEDDING_DIM
 
 EMB_SUFFIX="$EMB_TYPE"_"$EMB_L"_"$EMBEDDING_DIM"_"$EMB_P"_"$EMB_Q"
 if [ "$EMB_TYPE" == "combined" ]; then
@@ -52,6 +51,7 @@ if [ "$USE_NODE_VECTORS" == "true" ]; then
     export PRETRAINED_FILE="$DATA_ROOT"data/embeddings/"$EMB_SUFFIX".emb
 else
     export PRETRAINED_FILE=None
+    (( EMBEDDING_DIM = BERT_DIM + EMBEDDING_DIM ))
 fi
 
 if [ "$EMBEDDED_TEXT" == "title" ]; then
@@ -61,6 +61,7 @@ else
 fi
 
 export INPUT_DIM=$INPUT_DIM
+export EMBEDDING_DIM=$EMBEDDING_DIM
 
 echo Serialization DIR: "$SERIALIZATION_DIR"
 echo Vector FIle: "$PRETRAINED_FILE"
