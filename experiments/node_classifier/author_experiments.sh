@@ -8,18 +8,23 @@ do
   export SEED=$SEED
   export PYTORCH_SEED=$SEED
   export NUMPY_SEED=$SEED
-  bash "$DIR"/train_acl_classifier.sh \
-    8 last_author 100 true false &&
 
   bash "$DIR"/train_acl_classifier.sh \
-    8 last_author 100 false true all 20 0.3 0.7 &&
+    8 last_author 100 false false
+  
+#  bash "$DIR"/train_acl_classifier.sh \
+#    8 last_author 100 true false &&
+#
+#  bash "$DIR"/train_acl_classifier.sh \
+#    8 last_author 100 false true all 20 0.3 0.7 &&
+#
+#  bash "$DIR"/train_acl_classifier.sh \
+#    8 last_author 100 false true combined 20 0.3 0.7 0.5 &&
+#
+#  bash "$DIR"/train_acl_classifier.sh \
+#    8 last_author 100 true true all 20 0.3 0.7 &&
+#
+#  bash "$DIR"/train_acl_classifier.sh \
+#    8 last_author 100 true true combined 20 0.3 0.7 0.5
 
-  bash "$DIR"/train_acl_classifier.sh \
-    8 last_author 100 false true combined 20 0.3 0.7 0.5 &&
-
-  bash "$DIR"/train_acl_classifier.sh \
-    8 last_author 100 true true all 20 0.3 0.7 &&
-
-  bash "$DIR"/train_acl_classifier.sh \
-    8 last_author 100 true true combined 20 0.3 0.7 0.5
 done
