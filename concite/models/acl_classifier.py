@@ -70,6 +70,8 @@ class AclClassifier(Model):
             embedding = self.text_field_embedder(abstract)[:, 0, :]
         elif self.use_node_vector:
             embedding = self.node_embedder(paper_id)
+        else:
+            embedding = self.node_embedder(paper_id)
 
         logits = self.classifier_feedforward(self.dropout(embedding))
         class_probs = F.softmax(logits, dim=1)

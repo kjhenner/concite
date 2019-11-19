@@ -26,7 +26,6 @@ export USE_ABSTRACT=$USE_ABSTRACT
 export USE_NODE_VECTOR=$USE_NODE_VECTOR
 export TOP_N=$TOP_N
 export HIDDEN_DIM=$HIDDEN_DIM
-export EMBEDDING_DIM=$EMBEDDING_DIM
 export BERT_VOCAB=/home/khenner/scibert_scivocab_uncased/vocab.txt
 export BERT_WEIGHTS=/home/khenner/scibert_scivocab_uncased/weights.tar.gz
 export TRAINING_DATA=$TRAINING_DATA
@@ -51,9 +50,11 @@ if [ "$USE_NODE_VECTOR" == "true" ]; then
   export PRETRAINED_FILE="$DATA_ROOT"data/embeddings/"$EMB_SUFFIX".emb
 else
   export PRETRAINED_FILE=None
+  (( EMBEDDING_DIM = BERT_DIM + EMBEDDING_DIM ))
 fi
 
 export INPUT_DIM=$INPUT_DIM
+export EMBEDDING_DIM=$EMBEDDING_DIM
 
 echo Serialization DIR: "$SERIALIZATION_DIR"
 echo Vector FIle: "$PRETRAINED_FILE"
