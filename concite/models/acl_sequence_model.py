@@ -153,6 +153,14 @@ class AclSequenceModel(Model):
         elif self._use_node_vectors:
             embeddings = self._seq_embedder(paper_ids)
             mask = get_text_field_mask(paper_ids)
+        else:
+            # When use_node_vectors is false, the embedder should be configured
+            # to initialize random embeddings. The redundant else condition
+            # makes this difference in behavior a little more explicit, even
+            # though the content of the block is identical.
+            embeddings = self._seq_embedder(paper_ids)
+            mask = get_text_field_mask(paper_ids)
+
         contextual_embeddings: Union[torch.Tensor, List[torch.Tensor]] = self._contextualizer(
                 embeddings, mask.long()
         )
