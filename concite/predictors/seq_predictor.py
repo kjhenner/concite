@@ -16,4 +16,4 @@ class SequencePredictor(Predictor):
     def predict_instance(self, instance: Instance) -> JsonDict:
         new_instance = deepcopy(instance)
         outputs = self._model.forward_on_instance(new_instance)
-        return {k: outputs[k] for k in ('top_k', 'mean_recall@20')}
+        return {k: outputs[k] for k in ('top_k_ids','top_k_titles')}
