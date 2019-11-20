@@ -187,7 +187,10 @@ class AclSequenceModel(Model):
         perplexity = self._perplexity(average_loss)
 
         if self._calculate_recall:
-            self.get_recall_at_n(contextual_embeddings, targets)
+            top_k = self.get_recall_at_n(contextual_embeddings, targets)
+            return_dict.update({
+                'top_k': top_k
+            })
 
         if num_targets > 0:
             return_dict.update({

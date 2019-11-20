@@ -37,7 +37,7 @@ if [ "$EMB_TYPE" == "combined" ]; then
   EMB_SUFFIX="$EMB_SUFFIX"_"$INTENT_WT"
 fi
 
-SERIALIZATION_DIR="$DATA_ROOT""$LABEL_FIELD"_serialization/"$SEED"/model
+SERIALIZATION_DIR=/shared/2/projects/concite/serialzation/"$LABEL_FIELD"_serialization/"$SEED"/model
 
 if [ "$USE_ABSTRACT" == "true" ]; then
     SERIALIZATION_DIR="$SERIALIZATION_DIR"_BERT
@@ -50,7 +50,11 @@ if [ "$USE_NODE_VECTOR" == "true" ]; then
   export PRETRAINED_FILE="$DATA_ROOT"data/embeddings/"$EMB_SUFFIX".emb
 else
   export PRETRAINED_FILE=None
+fi
+
+if [[ "$USE_NODE_VECTOR" == "false" && "$USE_ABSTRACT" == "false" ]]; then
   (( EMBEDDING_DIM = BERT_DIM + EMBEDDING_DIM ))
+  (( INPUT_DIM = INPUT_DIM + EMBEDDING_DIM ))
 fi
 
 export INPUT_DIM=$INPUT_DIM

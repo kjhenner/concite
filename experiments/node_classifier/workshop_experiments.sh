@@ -10,21 +10,21 @@ do
   export NUMPY_SEED=$SEED
 
   bash "$DIR"/train_acl_classifier.sh \
-    10 combined_workshop 100 false false
+    10 combined_workshop 100 false false &&
 
-#  bash "$DIR"/train_acl_classifier.sh \
-#    10 combined_workshop 100 true false &&
-#
-#  bash "$DIR"/train_acl_classifier.sh \
-#    10 combined_workshop 100 false true all 20 0.3 0.7 &&
-#
-#  bash "$DIR"/train_acl_classifier.sh \
-#    10 combined_workshop 100 true true all 20 0.3 0.7 &&
-#
-#  bash "$DIR"/train_acl_classifier.sh \
-#    10 combined_workshop 100 false true combined 20 0.3 0.7 0.5 &&
-#
-#  bash "$DIR"/train_acl_classifier.sh \
-#    10 combined_workshop 100 true true combined 20 0.3 0.7 0.5
+  bash "$DIR"/train_acl_classifier.sh \
+    10 combined_workshop 100 true false &&
+
+  bash "$DIR"/train_acl_classifier.sh \
+    10 combined_workshop 100 false true all 20 0.3 0.7 &&
+
+  bash "$DIR"/train_acl_classifier.sh \
+    10 combined_workshop 100 true true all 20 0.3 0.7 &&
+
+  bash "$DIR"/train_acl_classifier.sh \
+    10 combined_workshop 100 false true combined 20 0.3 0.7 0.5 &&
+
+  bash "$DIR"/train_acl_classifier.sh \
+    10 combined_workshop 100 true true combined 20 0.3 0.7 0.5
 
 done
