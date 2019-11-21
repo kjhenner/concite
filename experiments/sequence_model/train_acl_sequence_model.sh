@@ -52,8 +52,9 @@ else
     export PRETRAINED_FILE=None
 fi
 
-if [[ "$USE_NODE_VECTORS" == "false" && "$USE_ABSTRACTS" == "FALSE" ]]; then
+if [[ "$USE_NODE_VECTORS" == "false" && "$USE_ABSTRACTS" == "false" ]]; then
     (( EMBEDDING_DIM = BERT_DIM + EMBEDDING_DIM ))
+    (( INPUT_DIM = INPUT_DIM + EMBEDDING_DIM ))
 fi
 
 if [ "$EMBEDDED_TEXT" == "title" ]; then
