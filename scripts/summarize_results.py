@@ -17,13 +17,9 @@ def to_latex_row(data, title):
         "{:.4f}".format(data['accuracy'])
     ])
 
-#paths = [os.path.join(dp, f)
-#        for dp, dn, filenames in os.walk(sys.argv[1])
-#        for f in filenames if os.path.splitext(f)[-1] == 'metrics.json']
-
 paths = [os.path.join(dp, f)
         for dp, dn, filenames in os.walk(sys.argv[1])
-        for f in filenames]
+        for f in filenames if os.path.splitext(f)[-1] == 'metrics.json']
 
 for path in paths:
     with open(path) as f:
