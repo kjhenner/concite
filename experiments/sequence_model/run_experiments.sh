@@ -16,15 +16,15 @@ do
     title 100 true false &&
 
   bash "$DIR"/train_acl_sequence_model.sh \
-    title 100 false true all 20 0.3 0.7 &&
+    title 100 false true all&&
 
   bash "$DIR"/train_acl_sequence_model.sh \
-    title 100 false true combined 20 0.3 0.7 0.5 &&
+    title 100 false true combined &&
 
   bash "$DIR"/train_acl_sequence_model.sh \
-    title 100 true true all 20 0.3 0.7 &&
+    title 100 true true all &&
 
   bash "$DIR"/train_acl_sequence_model.sh \
-    title 100 true true combined 20 0.3 0.7 0.5
+    title 100 true true combined
 
 done
