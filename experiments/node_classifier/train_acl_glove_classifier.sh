@@ -50,4 +50,6 @@ export EMBEDDING_DIM=$EMBEDDING_DIM
 
 echo Serialization DIR: "$SERIALIZATION_DIR"
 echo Vector FIle: "$PRETRAINED_FILE"
+echo INPUT_DIM: "$INPUT_DIM"
+echo EMBEDDing_DIM: "$EMBEDDING_DIM"
 allennlp train allennlp_configs/acl_glove_classifier.json -s $SERIALIZATION_DIR -f --include-package concite
