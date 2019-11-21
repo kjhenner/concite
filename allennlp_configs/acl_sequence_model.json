@@ -63,7 +63,7 @@
     "num_epochs": 80,
     "grad_clipping": 5.0,
     "patience": 6,
-    "cuda_device": 3,
+    "cuda_device": std.parseInt(std.extVar("CUDA_DEVICE")),
     "validation_metric": "-perplexity",
     "num_serialized_models_to_keep": 1,
     //"gradient_accumulation_batch_size": 32,
