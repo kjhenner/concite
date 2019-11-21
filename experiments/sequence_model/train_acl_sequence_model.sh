@@ -2,12 +2,12 @@ EMBEDDED_TEXT=$1
 HIDDEN_DIM=$2
 USE_ABSTRACTS=$3
 USE_NODE_VECTORS=$4
-
 EMB_TYPE=$5 # "all" or "combined"
-EMB_L=$6
-EMB_P=$7
-EMB_Q=$8
-INTENT_WT=${9}
+
+EMB_L=20
+EMB_P=0.3
+EMB_Q=0.7
+INTENT_WT=0.5
 
 EMBEDDING_DIM=384
 BERT_DIM=768
@@ -37,20 +37,24 @@ if [ "$EMB_TYPE" == "combined" ]; then
     EMB_SUFFIX="$EMB_SUFFIX"_"$INTENT_WT"
 fi
 
-SERIALIZATION_DIR="$DATA_ROOT"/sequence_serialization_"$HIDDEN_DIM"/citations
+SERIALIZATION_DIR=/shared/2/projects/concite/serialization/sequence_serialization/"$SEED"/model
 
 if [ "$USE_ABSTRACTS" == "true" ]; then
-    SERIALIZATION_DIR="$SERIALIZATION_DIR"_abstract
+    SERIALIZATION_DIR="$SERIALIZATION_DIR"_BERT
     (( INPUT_DIM = INPUT_DIM + BERT_DIM ))
 fi
 
 if [ "$USE_NODE_VECTORS" == "true" ]; then
-    SERIALIZATION_DIR="$SERIALIZATION_DIR"_n2v_"$EMB_SUFFIX"
+    SERIALIZATION_DIR="$SERIALIZATION_DIR"_n2v_"$EMB_TYPE"
     (( INPUT_DIM = INPUT_DIM + EMBEDDING_DIM ))
     export PRETRAINED_FILE="$DATA_ROOT"data/embeddings/"$EMB_SUFFIX".emb
 else
     export PRETRAINED_FILE=None
+fi
+
+if [[ "$USE_NODE_VECTORS" == "false" && "$USE_ABSTRACTS" == "false" ]]; then
     (( EMBEDDING_DIM = BERT_DIM + EMBEDDING_DIM ))
+    (( INPUT_DIM = INPUT_DIM + EMBEDDING_DIM ))
 fi
 
 if [ "$EMBEDDED_TEXT" == "title" ]; then
@@ -67,5 +71,3 @@ echo Vector FIle: "$PRETRAINED_FILE"
 echo $INPUT_DIM
 echo $HIDDEN_DIM
 allennlp train allennlp_configs/acl_sequence_model.json -s $SERIALIZATION_DIR -f --include-package concite
-rm "$SERIALIZATION_DIR"/training_state_epoch_*
-rm "$SERIALIZATION_DIR"/model_state_epoch_*
