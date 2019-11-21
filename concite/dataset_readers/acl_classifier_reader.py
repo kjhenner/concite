@@ -50,7 +50,10 @@ class AclClassifierReader(DatasetReader):
                 label: str,
                 paper_id: str) -> Instance:
 
-        abstract_tokens = self._tokenizer.split_words(abstract)
+        try:
+            abstract_tokens = self._tokenizer.split_words(abstract)
+        except AttributeError:
+            abstract_tokens = self._tokenizer.tokenize(abstract)
 
         fields = {
             'abstract': TextField(abstract_tokens, self._token_indexers),
