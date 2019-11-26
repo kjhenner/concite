@@ -60,7 +60,7 @@ class AclEmbedderReader(DatasetReader):
                 paper_b=ex[1],
                 text_a=paper_a[self._text_field],
                 text_b=paper_b[self._text_field],
-                label=int(ex[2]),
+                label=1,
             )
             for _ in range(self._neg_samples):
                 paper_a = self._paper_lookup[choice(self._paper_ids)]
@@ -70,7 +70,7 @@ class AclEmbedderReader(DatasetReader):
                     paper_b = paper_b['paper_id'],
                     text_a = paper_a[self._text_field],
                     text_b = paper_b[self._text_field],
-                    label = -1 ,
+                    label=-1,
                 )
 
     @overrides

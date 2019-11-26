@@ -3,11 +3,7 @@ LABEL_FIELD=$2
 HIDDEN_DIM=$3
 USE_ABSTRACT=$4
 USE_NODE_VECTOR=$5
-EMB_TYPE=$6 # "all" or "combined"
-EMB_L=$7
-EMB_P=$8
-EMB_Q=$9
-INTENT_WT=${10}
+EMB=$6
 
 EMBEDDING_DIM=384
 BERT_DIM=768
@@ -32,12 +28,7 @@ export TRAINING_DATA=$TRAINING_DATA
 export DEV_DATA=$DEV_DATA
 export TEST_DATA=$TEST_DATA
 
-EMB_SUFFIX="$EMB_TYPE"_"$EMB_L"_"$EMBEDDING_DIM"_"$EMB_P"_"$EMB_Q"
-if [ "$EMB_TYPE" == "combined" ]; then
-  EMB_SUFFIX="$EMB_SUFFIX"_"$INTENT_WT"
-fi
-
-SERIALIZATION_DIR=/shared/2/projects/concite/serialzation/"$LABEL_FIELD"_serialization/"$SEED"/model
+SERIALIZATION_DIR=/shared/2/projects/concite/serialization/"$LABEL_FIELD"_serialization/"$SEED"/model
 
 if [ "$USE_ABSTRACT" == "true" ]; then
     SERIALIZATION_DIR="$SERIALIZATION_DIR"_BERT
@@ -45,9 +36,9 @@ if [ "$USE_ABSTRACT" == "true" ]; then
 fi
 
 if [ "$USE_NODE_VECTOR" == "true" ]; then
-  SERIALIZATION_DIR="$SERIALIZATION_DIR"_n2v_"$EMB_TYPE"
+  SERIALIZATION_DIR="$SERIALIZATION_DIR"_n2v_"$EMB"
   (( INPUT_DIM = INPUT_DIM + EMBEDDING_DIM ))
-  export PRETRAINED_FILE="$DATA_ROOT"data/embeddings/"$EMB_SUFFIX".emb
+  export PRETRAINED_FILE="$DATA_ROOT"data/embeddings/"$EMB".emb
 else
   export PRETRAINED_FILE=None
 fi

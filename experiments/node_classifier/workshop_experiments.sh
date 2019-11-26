@@ -16,15 +16,33 @@ do
     10 combined_workshop 100 true false &&
 
   bash "$DIR"/train_acl_classifier.sh \
-    10 combined_workshop 100 false true all 20 0.3 0.7 &&
+    10 combined_workshop 100 false true all_prop &&
 
   bash "$DIR"/train_acl_classifier.sh \
-    10 combined_workshop 100 true true all 20 0.3 0.7 &&
+    10 combined_workshop 100 true true all_prop &&
 
   bash "$DIR"/train_acl_classifier.sh \
-    10 combined_workshop 100 false true combined 20 0.3 0.7 0.5 &&
+    10 combined_workshop 100 false true all_uniform &&
 
   bash "$DIR"/train_acl_classifier.sh \
-    10 combined_workshop 100 true true combined 20 0.3 0.7 0.5
+    10 combined_workshop 100 true true all_uniform &&
+
+  bash "$DIR"/train_acl_classifier.sh \
+    10 combined_workshop 100 false true bkg_penalty &&
+
+  bash "$DIR"/train_acl_classifier.sh \
+    10 combined_workshop 100 true true bkg_penalty &&
+
+  bash "$DIR"/train_acl_classifier.sh \
+    10 combined_workshop 100 false true combined_fixed &&
+
+  bash "$DIR"/train_acl_classifier.sh \
+    10 combined_workshop 100 true true combined_fixed &&
+
+  bash "$DIR"/train_acl_classifier.sh \
+    10 combined_workshop 100 false true combined_prop &&
+
+  bash "$DIR"/train_acl_classifier.sh \
+    10 combined_workshop 100 true true combined_prop
 
 done

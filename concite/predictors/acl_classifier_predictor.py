@@ -16,4 +16,5 @@ class AclClassifierPredictor(Predictor):
     def predict_instance(self, instance: Instance) -> JsonDict:
         new_instance = deepcopy(instance)
         outputs = self._model.forward_on_instance(new_instance)
+        outputs['paper_id'] = instance['paper_id'].label
         return sanitize(outputs)

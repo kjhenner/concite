@@ -53,7 +53,7 @@ class _SoftmaxLoss(torch.nn.Module):
     def probs(self,
               embeddings: torch.Tensor) -> torch.Tensor:
 
-        return torch.nn.functional.log_softmax(torch.matmul(embeddings, self.softmax_w) + self.softmax_b, dim=1)
+        return torch.nn.functional.log_softmax(torch.matmul(embeddings, self.softmax_w) + self.softmax_b, dim=-1)
 
 @Model.register('acl_sequence_model')
 class AclSequenceModel(Model):
@@ -212,12 +212,17 @@ class AclSequenceModel(Model):
 
     def get_recall_at_n(self, embeddings, targets):
         top_n = []
+        # iterate over batches:
         for embeddings, targets in zip(embeddings.detach(), targets.detach()):
+            # (sequence_length, #targets)
             probs = self._compute_probs(embeddings, targets)
             top_probs, top_indices = probs.topk(k=max(self._n_list), dim=-1)
-            top_n.append([[self.vocab.get_token_from_index(int(i))
-                for i in top_n]
-                for top_n in top_indices])
+            top_ids = [
+                [self.vocab.get_token_from_index(int(i)) for i in top_n]
+                for top_n in top_indices
+            ]
+            top_n.append(top_ids)
+
             mask = targets > 0
             non_masked_targets = targets.masked_select(mask) - 1
             for n in self._n_list:

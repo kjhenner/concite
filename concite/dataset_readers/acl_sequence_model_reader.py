@@ -63,20 +63,18 @@ class AclSequenceModelReader(DatasetReader):
     def _read(self, file_path):
         with open(file_path) as f:
             for ex in f.readlines():
-                abstracts = [self.data_lookup[paper_id].get('abstract')[:self._sent_len_limit] for paper_id in ex.split()]
                 yield self.text_to_instance(
-                    abstracts = abstracts,
                     trace_seq = ex,
                 )
 
     @overrides
     def text_to_instance(self,
-                abstracts: List[str],
                 trace_seq: List[str]) -> Instance:
         
         # Joining the trace_seq back into a string makes it fit more easily
         # into the workflow.
         paper_ids = self._sequence_tokenizer.split_words(trace_seq)
+        abstracts = [self.data_lookup[paper_id.text].get('abstract')[:self._sent_len_limit] for paper_id in paper_ids]
         tokenized_abstracts = []
         for abstract in abstracts:
             if abstract == '<s>':
