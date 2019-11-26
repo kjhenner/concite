@@ -9,7 +9,7 @@ EMBEDDING_DIM=384
 BERT_DIM=768
 INPUT_DIM=0
 
-DATA_ROOT="/shared-1/projects/concite/"
+DATA_ROOT="/shared/1/projects/concite/"
 
 TRAINING_DATA="$DATA_ROOT"data/acl_data/train_"$TOP_N"_"$LABEL_FIELD"_acl_data.jsonl
 DEV_DATA="$DATA_ROOT"data/acl_data/dev_"$TOP_N"_"$LABEL_FIELD"_acl_data.jsonl
