@@ -63,7 +63,7 @@
     "cache_instances": true
   },
   "trainer": {
-    "num_epochs": 100,
+    "num_epochs": 150,
     "grad_clipping": 5.0,
     "patience": 10,
     "validation_metric": "+average_F1",
