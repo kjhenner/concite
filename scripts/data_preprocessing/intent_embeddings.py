@@ -66,7 +66,7 @@ if __name__ == "__main__":
     # Full porportional
     name = "{}_{}_{}_{}_{}.emb".format('prop', 384, p, q, l)
     edges = load_edges(edge_path, weights=prop_wts)
-    emb = Node2VecEmb(edges, l, d, p, q, w=True)
+    emb = Node2VecEmb(edges, l, 384, p, q, w=True)
     emb.write_embeddings(os.path.join(out_dir, name))
 
     # Full drop background
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         'result':1.0
     }
     edges = load_edges(edge_path, weights=wts)
-    emb = Node2VecEmb(edges, l, d, p, q, w=True)
+    emb = Node2VecEmb(edges, l, 384, p, q, w=True)
     emb.write_embeddings(os.path.join(out_dir, name))
 
     # Full uniform
@@ -88,5 +88,5 @@ if __name__ == "__main__":
         'result':1.0
     }
     edges = load_edges(edge_path, weights=wts)
-    emb = Node2VecEmb(edges, l, d, p, q, w=True)
+    emb = Node2VecEmb(edges, l, 384, p, q, w=True)
     emb.write_embeddings(os.path.join(out_dir, name))
