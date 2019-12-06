@@ -21,6 +21,7 @@ def load_json_path(path, intent_lookup):
         json_data = json.load(f)
     citing_paper_id = json_data['paper_id']
     for citation_context in json_data['citation_contexts']:
+        citing_string = citation_context['citing_string']
         cited_paper_id = citation_context['cited_paper_id']
         is_self_cite = citation_context['is_self_cite']
         section = citation_context["section"]
@@ -31,6 +32,7 @@ def load_json_path(path, intent_lookup):
         yield {
             "text": sentence_text,
             "metadata": {
+                "citing_string": citing_string,
                 "section_number": section,
                 "is_self_cite": is_self_cite,
                 "intent_label": intent_label,

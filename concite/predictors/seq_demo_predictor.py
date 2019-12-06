@@ -31,6 +31,7 @@ class SequenceDemoPredictor(Predictor):
     def predict_instance(self, instance: Instance) -> JsonDict:
         new_instance = deepcopy(instance)
         outputs = self._model.forward_on_instance(new_instance)
+        print(outputs)
         return {
                 "titles": [self.token_to_title(token) for token in instance['paper_ids'].tokens],
                 "top_predictions": [self.format_output(paper_id)

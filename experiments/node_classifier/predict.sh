@@ -1,4 +1,4 @@
-ROOT_DIR=/shared-1/projects/concite/
+ROOT_DIR=/shared/1/projects/concite/
 CUDA_DEVICE=2
 
 for MODEL in "abstract" \
@@ -8,7 +8,7 @@ for MODEL in "abstract" \
   "n2v_combined_20_384_0.3_0.7_0.5"
 do
   allennlp predict \
-    "$ROOT_DIR"serialization_100/10_combined_workshop_"$MODEL"/model.tar.gz \
+    "$ROOT_DIR"serialization/10_combined_workshop_"$MODEL"/model.tar.gz \
     "$ROOT_DIR"data/acl_data/test_10_combined_workshop_acl_data.jsonl \
     --include-package concite \
     --predictor acl_classifier \

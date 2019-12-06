@@ -45,19 +45,24 @@ if __name__ == "__main__":
     train_Y = [label_to_int[ex[label_field]] for ex in train_examples]
     test_Y = [label_to_int[ex[label_field]] for ex in test_examples]
 
-    clf = make_pipeline(StandardScaler(), SVC(probability=True, kernel='sigmoid', random_state=1, gamma='scale', C=0.9))
-    clf.fit(train_X, train_Y)
-
-    pred_Y = clf.predict(test_X)
-
-    print(classification_report(test_Y, pred_Y, target_names = labels, digits=5))
-    
     try:
         os.mkdir(serialization_dir)
     except FileExistsError:
         pass
 
-    with open(os.path.join(serialization_dir, 'smc_model_predictions.tsv'), 'w') as f:
-        f.write('\t'.join(labels)+"\n")
-        for pair in zip(test_Y, pred_Y):
-            f.write("{}\t{}\n".format(*pair))
+    for seed in [666, 669, 672, 675, 678]:
+        clf = make_pipeline(StandardScaler(), SVC(probability=True, kernel='sigmoid', random_state=seed, gamma='scale', C=0.9))
+        clf.fit(train_X, train_Y)
+
+        pred_Y = clf.predict(test_X)
+
+        report = classification_report(test_Y, pred_Y, target_names = labels, digits=4)
+
+        with open(os.path.join(serialization_dir, '{}_smc_report'.format(seed)), 'w') as f:
+            f.write(report)
+        
+
+        with open(os.path.join(serialization_dir, '{}_smc_predictions.tsv'.format(seed)), 'w') as f:
+            f.write('\t'.join(labels)+"\n")
+            for pair in zip(test_Y, pred_Y):
+                f.write("{}\t{}\n".format(*pair))

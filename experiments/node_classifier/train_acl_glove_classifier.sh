@@ -25,7 +25,7 @@ export TRAINING_DATA=$TRAINING_DATA
 export DEV_DATA=$DEV_DATA
 export TEST_DATA=$TEST_DATA
 
-SERIALIZATION_DIR=/shared/2/projects/concite/serialization/"$LABEL_FIELD"_serialization/"$SEED"/model_glove
+SERIALIZATION_DIR=/shared/1/projects/concite/serialization/"$LABEL_FIELD"_serialization/"$SEED"/model_glove
 
 if [ "$USE_NODE_VECTOR" == "true" ]; then
   SERIALIZATION_DIR="$SERIALIZATION_DIR"_n2v_"$EMB"

@@ -91,7 +91,7 @@ if __name__ == "__main__":
     model_paths = [os.path.join(dp, f)
             for dp, dn, filenames in os.walk(serialization_dir)
             for f in filenames if os.path.split(f)[-1] == 'model.tar.gz']
-    
+
     model_metrics = defaultdict(dict)
 
     for model_path in model_paths:
