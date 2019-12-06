@@ -1,14 +1,21 @@
-ROOT_DIR=/shared-1/projects/concite/
+ROOT_DIR=/shared/1/projects/concite/
 CUDA_DEVICE=2
 
-for MODEL in "abstract" \
-  "abstract_n2v_all_20_384_0.3_0.7" \
-  "abstract_n2v_combined_20_384_0.3_0.7_0.5" \
-  "n2v_all_20_384_0.3_0.7" \
-  "n2v_combined_20_384_0.3_0.7_0.5"
+#for MODEL in "model" \
+#  "model_BERT" \
+#  "model_BERT_n2v_all_prop" \
+#  "model_BERT_n2v_all_uniform" \
+#  "model_BERT_n2v_bkg_penalty" \
+#  "model_BERT_n2v_combined_fixed" \
+#  "model_BERT_n2v_combined_prop" \
+#  "model_n2v_all_prop" \
+#  "model_n2v_all_uniform" \
+#  "model_n2v_bkg_penalty" \
+#  "model_n2v_combined_fixed" \
+for MODEL in "model_n2v_combined_prop"
 do
   allennlp evaluate \
-    "$ROOT_DIR"sequence_serialization_100/citations_"$MODEL"/model.tar.gz \
+    "$ROOT_DIR"serialization/sequence_serialization/666/"$MODEL"/model.tar.gz \
     "$ROOT_DIR"data/acl_data/dev_acl_citation_sequences.txt \
     --include-package concite \
     --output-file output/sequence/"$MODEL".jsonl \

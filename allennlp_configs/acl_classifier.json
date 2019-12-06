@@ -68,12 +68,13 @@
     "cache_instances": true
   },
   "trainer": {
-    "num_epochs": 100,
+    "num_epochs": 150,
     "grad_clipping": 5.0,
-    "patience": 10,
+    "patience": 15,
     "validation_metric": "+average_F1",
     "num_serialized_models_to_keep": 1,
     "cuda_device": std.parseInt(std.extVar("CUDA_DEVICE")),
+    "should_log_parameter_statistics": false,
     //"gradient_accumulation_batch_size": 48,
     "optimizer": {
       "type": "bert_adam",

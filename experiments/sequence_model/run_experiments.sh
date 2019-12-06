@@ -16,15 +16,33 @@ do
     title 100 true false &&
 
   bash "$DIR"/train_acl_sequence_model.sh \
-    title 100 false true all&&
+    title 100 false true all_prop &&
 
   bash "$DIR"/train_acl_sequence_model.sh \
-    title 100 false true combined &&
+    title 100 false true all_uniform &&
 
   bash "$DIR"/train_acl_sequence_model.sh \
-    title 100 true true all &&
+    title 100 false true bkg_penalty &&
 
   bash "$DIR"/train_acl_sequence_model.sh \
-    title 100 true true combined
+    title 100 false true combined_prop &&
+
+  bash "$DIR"/train_acl_sequence_model.sh \
+    title 100 false true combined_fixed &&
+
+  bash "$DIR"/train_acl_sequence_model.sh \
+    title 100 true true all_prop &&
+
+  bash "$DIR"/train_acl_sequence_model.sh \
+    title 100 true true all_uniform &&
+
+  bash "$DIR"/train_acl_sequence_model.sh \
+    title 100 true true bkg_penalty &&
+
+  bash "$DIR"/train_acl_sequence_model.sh \
+    title 100 true true combined_prop &&
+
+  bash "$DIR"/train_acl_sequence_model.sh \
+    title 100 true true combined_fixed
 
 done

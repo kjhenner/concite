@@ -2,18 +2,13 @@ EMBEDDED_TEXT=$1
 HIDDEN_DIM=$2
 USE_ABSTRACTS=$3
 USE_NODE_VECTORS=$4
-EMB_TYPE=$5 # "all" or "combined"
-
-EMB_L=20
-EMB_P=0.3
-EMB_Q=0.7
-INTENT_WT=0.5
+EMB=$5 # "all" or "combined"
 
 EMBEDDING_DIM=384
 BERT_DIM=768
 INPUT_DIM=0
 
-DATA_ROOT="/shared-1/projects/concite/"
+DATA_ROOT="/shared/1/projects/concite/"
 
 TRAINING_DATA="$DATA_ROOT"data/acl_data/train_acl_citation_sequences.txt
 DEV_DATA="$DATA_ROOT"data/acl_data/dev_acl_citation_sequences.txt
@@ -32,12 +27,7 @@ export TRAINING_DATA=$TRAINING_DATA
 export DEV_DATA=$DEV_DATA
 export TEST_DATA=$TEST_DATA
 
-EMB_SUFFIX="$EMB_TYPE"_"$EMB_L"_"$EMBEDDING_DIM"_"$EMB_P"_"$EMB_Q"
-if [ "$EMB_TYPE" == "combined" ]; then
-    EMB_SUFFIX="$EMB_SUFFIX"_"$INTENT_WT"
-fi
-
-SERIALIZATION_DIR=/shared/2/projects/concite/serialization/sequence_serialization/"$SEED"/model
+SERIALIZATION_DIR=/shared/1/projects/concite/serialization/sequence_serialization/"$SEED"/model
 
 if [ "$USE_ABSTRACTS" == "true" ]; then
     SERIALIZATION_DIR="$SERIALIZATION_DIR"_BERT
@@ -45,9 +35,9 @@ if [ "$USE_ABSTRACTS" == "true" ]; then
 fi
 
 if [ "$USE_NODE_VECTORS" == "true" ]; then
-    SERIALIZATION_DIR="$SERIALIZATION_DIR"_n2v_"$EMB_TYPE"
+    SERIALIZATION_DIR="$SERIALIZATION_DIR"_n2v_"$EMB"
     (( INPUT_DIM = INPUT_DIM + EMBEDDING_DIM ))
-    export PRETRAINED_FILE="$DATA_ROOT"data/embeddings/"$EMB_SUFFIX".emb
+    export PRETRAINED_FILE="$DATA_ROOT"data/embeddings/"$EMB".emb
 else
     export PRETRAINED_FILE=None
 fi

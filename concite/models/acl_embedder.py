@@ -40,6 +40,10 @@ class AclEmbedder(Model):
         self.verbose_metrics = verbose_metrics
 
         self.loss = torch.nn.CosineEmbeddingLoss()
+
+        self.f1_metric = F1Measure(positive_label=1)
+        self.margin = torch.Tensor(0.5)
+
         initializer(self)
 
     @overrides
@@ -65,7 +69,12 @@ class AclEmbedder(Model):
             emb_b = self.dropout(self.node_embedder(paper_b))
 
         if label is not None:
-            loss = self.loss(emb_a,emb_b,label.float())
+            loss = self.loss(emb_a,emb_b,label.float(), margin=0.5)
             output_dict = {"loss": loss}
+
+        if not self.training:
+            cosine_similarity = F.cosine_similarity(emb_a, emb_b)
+            pred = (cosine_similarity > 0.5).int()
+            self.f1_metric(pred, label)
 
         return output_dict

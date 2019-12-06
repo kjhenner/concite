@@ -8,51 +8,49 @@ import sys
 
 class Node2VecEmb:
 
-    def __init__(self, edges, l, d, p, q, w=False, ow=False, verbose=True, name='emb', use_cache=True):
-
+    def __init__(self, edges, l, d, p, q, w=False, ow=False, verbose=True):
         self.verbose = verbose
         nodes = list(set([node for edge in edges for node in edge]))
         self.idx_to_node = dict(enumerate(nodes))
         self.node_to_idx = dict([(node, i) for i, node in enumerate(nodes)])
-        ext = 'emb'
         if ow:
             ext = 'walks'
-        out_path = os.path.abspath('{}_{}_{}_{}_{}.{}'.format(name, l, d, p, q, ext))
-
-        if not os.path.exists(out_path) or not use_cache:
-            with NamedTemporaryFile(mode='w') as f:
-                if self.verbose:
-                    print("Writing edge data for {} edges to {}...".format(len(edges), f.name))
-                if w:
-                    f.write('\n'.join(["{}\t{}\t{}".format(*map(self.node_to_idx.get, edge)) for edge in edges]))
-                else:
-                    f.write('\n'.join(["{}\t{}".format(*map(self.node_to_idx.get, edge)) for edge in edges]))
-                f.flush()
-                
-                edge_path = f.name
-                args = ['/home/khenner/src/snap/examples/node2vec/node2vec',
-                        '-i:{}'.format(edge_path),
-                        '-o:{}'.format(out_path),
-                        '-l:{}'.format(l),
-                        '-d:{}'.format(d),
-                        '-p:{}'.format(p),
-                        '-q:{}'.format(q)]
-                if ow:
-                    args.append('-ow')
-                if w:
-                    args.append('-w')
-                p = Popen(args, stdout=PIPE)
-                if self.verbose:
-                    print(args)
-                if self.verbose:
-                    print(p.communicate()[0].decode('utf-8'))
+        out_path = os.path.abspath('{}_{}_{}_{}.emb'.format(l, d, p, q))
+        with NamedTemporaryFile(mode='w') as f:
+            if self.verbose:
+                print("Writing {} edges to {}".format(len(edges), f.name))
+            f.write('\n'.join([self.edge_to_string(edge) for edge in edges]))
+            f.flush()
+            edge_path = f.name
+            self.run_n2v(edge_path, out_path, l, d, p, q, ow, w)
         if ow:
             self.read_walks(out_path)
         else:
             self.read_embeddings(out_path)
 
+    def run_n2v(self, edge_path, out_path, l, d, p, q, ow, w):
+        args = ['/home/khenner/src/snap/examples/node2vec/node2vec',
+                '-i:{}'.format(edge_path),
+                '-o:{}'.format(out_path),
+                '-l:{}'.format(l),
+                '-d:{}'.format(d),
+                '-p:{}'.format(p),
+                '-e:2',
+                '-q:{}'.format(q)]
+        if ow:
+            args.append('-ow')
+        if w:
+            args.append('-w')
+        p = Popen(args, stdout=PIPE)
+        if self.verbose:
+            print(args)
+            for line in iter(p.stdout.readline, b''):
+                sys.stdout.write(line.decode('utf-8'))
+            output = p.communicate()[0]
+            print(output.decode('utf-8'))
+
     def edge_to_string(self, edge):
-        return '{}\t{}'.format(*map(self.node_to_idx.get, edge))
+        return '{}\t{}\t{}'.format(*map(self.node_to_idx.get, edge))
 
     def to_vec(self, node):
         return self.array[self.node_to_vector_idx[node]]
@@ -97,5 +95,5 @@ if __name__ == '__main__':
     with open(edge_file) as f:
         edges = [line.split() for line in f.readlines()]
 
-    emb = Node2VecEmb(edges, 40, 128, 0.5, 0.5, use_cache=False)
+    emb = Node2VecEmb(edges, 40, 128, 0.5, 0.5)
     emb.write_embeddings(out_path)

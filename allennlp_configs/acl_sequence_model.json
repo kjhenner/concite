@@ -21,7 +21,7 @@
     "type": "acl_sequence_model",
     "use_abstracts": std.extVar("USE_ABSTRACTS"),
     "use_node_vectors": std.extVar("USE_NODE_VECTORS"),
-    "dropout": 0.5,
+    "dropout": 0.2,
     "seq_embedder": {
       "allow_unmatched_keys": true,
       "embedder_to_indexer_map": {
@@ -62,10 +62,11 @@
   "trainer": {
     "num_epochs": 80,
     "grad_clipping": 5.0,
-    "patience": 6,
+    "patience": 10,
     "cuda_device": std.parseInt(std.extVar("CUDA_DEVICE")),
     "validation_metric": "-perplexity",
     "num_serialized_models_to_keep": 1,
+    "should_log_parameter_statistics": false,
     //"gradient_accumulation_batch_size": 32,
     "optimizer": {
       "type": "bert_adam",

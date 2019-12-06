@@ -21,9 +21,9 @@ def get_counts(examples, key_field):
 
 def tsne_plot(labels, vectors, out_path, rows, cols):
     tsne = TSNE(n_components=2, random_state=0).fit_transform(vectors)
-    matplotlib.rc('font', size=3)
+    matplotlib.rc('font', size=7)
     fig, axes = plt.subplots(nrows=rows, ncols=cols, dpi=400, figsize=(cols*2,rows*2))
-    for i, label in enumerate(set(labels)):
+    for i, label in enumerate(sorted(list(set(labels)))):
         c = np.asarray([(0.8, 0.1, 0.2, 0.8) if l==label else (0.6,0.6,0.6,0.2) for l in labels])
         plt.subplot(rows, cols, i+1)
         plt.scatter(tsne[:, 0], tsne[:, 1], s=1, c=c, linewidths=0)
@@ -38,7 +38,7 @@ def tsne_plot_3d(labels, vectors, dates, out_path, rows, cols):
     fig, axes = plt.subplots(nrows=rows, ncols=cols, dpi=400, figsize=(cols*2,rows*2))
     for i, label in enumerate(set(labels)):
         c = np.asarray([(0.8, 0.1, 0.2, 0.8) if l==label else (0.6,0.6,0.6,0.2) for l in labels])
-        plt.subplot(rows, cols, i+1, projection='3d')
+        plt.subplot(cols, rows, i+1, projection='3d')
         plt.scatter(tsne[:, 0], tsne[:, 1], s=1, c=c, linewidths=0)
         plt.title(label, pad=-4)
     fig.tight_layout()
@@ -58,6 +58,8 @@ if __name__ == "__main__":
     top_n = int(sys.argv[3])
     key_field = sys.argv[4]
     out_path = sys.argv[5]
+    cols = int(sys.argv[6])
+    rows = int(sys.argv[7])
 
     examples = list(jsonlines.open(data_path))
 
@@ -69,5 +71,5 @@ if __name__ == "__main__":
     labels = [example[key_field] for example in examples]
     emb_matrix = [emb_lookup[example['paper_id']] for example in examples]
 
-    tsne_plot(labels, emb_matrix, out_path, 4, 2)
+    tsne_plot(labels, emb_matrix, out_path, rows, cols)
     #tsne_plot_3d(labels, emb_matrix, dates, out_path)
