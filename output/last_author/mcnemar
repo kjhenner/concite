@@ -1,0 +1,459 @@
+model_BERT model_BERT_n2v_bkg_penalty:
+(0.045454545454545456, 0.8311704095417624)
+
+model_BERT model_n2v_all_prop:
+(0.5161290322580645, 0.47249761400068846)
+
+model_BERT model_BERT_n2v_combined_fixed:
+(0.0, 1.0)
+
+model_BERT model_BERT_n2v_all_uniform:
+(0.0, 1.0)
+
+model_BERT model_BERT_n2v_all_prop:
+(0.05555555555555555, 0.8136637157667919)
+
+model_BERT model_n2v_bkg_penalty:
+(8.027777777777779, 0.004606532263391753)
+
+model_BERT model_glove_n2v_combined_prop:
+(0.5925925925925926, 0.4414183267820536)
+
+model_BERT model_glove_n2v_all_uniform:
+(5.921052631578948, 0.014961017675175686)
+
+model_BERT model_BERT_n2v_combined_prop:
+(0.05, 0.8230632737581214)
+
+model_BERT model_glove_n2v_bkg_penalty:
+(7.03125, 0.008009942329880018)
+
+model_BERT model_glove_n2v_all_prop:
+(0.13793103448275862, 0.7103465689955667)
+
+model_BERT model_glove:
+(26.28125, 2.9514019251156993e-07)
+
+model_BERT model_n2v_all_uniform:
+(0.029411764705882353, 0.8638317428547264)
+
+model_BERT model_glove_n2v_combined_fixed:
+(2.064516129032258, 0.1507627750266412)
+
+model_BERT model:
+(16.48780487804878, 4.896400204355142e-05)
+
+model_BERT model_n2v_combined_fixed:
+(2.3823529411764706, 0.12271259472816963)
+
+model_BERT model_n2v_combined_prop:
+(1.3333333333333333, 0.24821307898992026)
+
+model_BERT_n2v_bkg_penalty model_n2v_all_prop:
+(0.12121212121212122, 0.7277235466695502)
+
+model_BERT_n2v_bkg_penalty model_BERT_n2v_combined_fixed:
+(0.17391304347826086, 0.6766573217164242)
+
+model_BERT_n2v_bkg_penalty model_BERT_n2v_all_uniform:
+(0.0, 1.0)
+
+model_BERT_n2v_bkg_penalty model_BERT_n2v_all_prop:
+(0.045454545454545456, 0.8311704095417624)
+
+model_BERT_n2v_bkg_penalty model_n2v_bkg_penalty:
+(10.617647058823529, 0.0011201348827110807)
+
+model_BERT_n2v_bkg_penalty model_glove_n2v_combined_prop:
+(0.12121212121212122, 0.7277235466695502)
+
+model_BERT_n2v_bkg_penalty model_glove_n2v_all_uniform:
+(4.970588235294118, 0.025781877777472546)
+
+model_BERT_n2v_bkg_penalty model_BERT_n2v_combined_prop:
+(0.16666666666666666, 0.6830913983096086)
+
+model_BERT_n2v_bkg_penalty model_glove_n2v_bkg_penalty:
+(8.027777777777779, 0.004606532263391753)
+
+model_BERT_n2v_bkg_penalty model_glove_n2v_all_prop:
+(0.0, 1.0)
+
+model_BERT_n2v_bkg_penalty model_glove:
+(26.694444444444443, 2.383057066402791e-07)
+
+model_BERT_n2v_bkg_penalty model_n2v_all_uniform:
+(0.02631578947368421, 0.8711314915971582)
+
+model_BERT_n2v_bkg_penalty model_glove_n2v_combined_fixed:
+(1.0285714285714285, 0.31049443431723206)
+
+model_BERT_n2v_bkg_penalty model:
+(17.42222222222222, 2.9930622223033853e-05)
+
+model_BERT_n2v_bkg_penalty model_n2v_combined_fixed:
+(1.3611111111111112, 0.24334500914875917)
+
+model_BERT_n2v_bkg_penalty model_n2v_combined_prop:
+(0.5517241379310345, 0.4576140668763148)
+
+model_n2v_all_prop model_BERT_n2v_combined_fixed:
+(0.7352941176470589, 0.3911725228101395)
+
+model_n2v_all_prop model_BERT_n2v_all_uniform:
+(0.2647058823529412, 0.6069054272179508)
+
+model_n2v_all_prop model_BERT_n2v_all_prop:
+(0.11428571428571428, 0.7353166906373405)
+
+model_n2v_all_prop model_n2v_bkg_penalty:
+(16.689655172413794, 4.402038910988803e-05)
+
+model_n2v_all_prop model_glove_n2v_combined_prop:
+(0.125, 0.7236736098317629)
+
+model_n2v_all_prop model_glove_n2v_all_uniform:
+(7.6923076923076925, 0.0055456673152440615)
+
+model_n2v_all_prop model_BERT_n2v_combined_prop:
+(0.43243243243243246, 0.5107977981738965)
+
+model_n2v_all_prop model_glove_n2v_bkg_penalty:
+(14.814814814814815, 0.00011860013866224722)
+
+model_n2v_all_prop model_glove_n2v_all_prop:
+(0.125, 0.7236736098317629)
+
+model_n2v_all_prop model_glove:
+(26.88372093023256, 2.1607121265531657e-07)
+
+model_n2v_all_prop model_n2v_all_uniform:
+(0.23529411764705882, 0.6276258050283593)
+
+model_n2v_all_prop model_glove_n2v_combined_fixed:
+(1.125, 0.2888443663464818)
+
+model_n2v_all_prop model:
+(20.020833333333332, 7.660302094057405e-06)
+
+model_n2v_all_prop model_n2v_combined_fixed:
+(1.7777777777777777, 0.18242243945173198)
+
+model_n2v_all_prop model_n2v_combined_prop:
+(0.1, 0.7518296340458492)
+
+model_BERT_n2v_combined_fixed model_BERT_n2v_all_uniform:
+(0.07142857142857142, 0.7892680261342813)
+
+model_BERT_n2v_combined_fixed model_BERT_n2v_all_prop:
+(0.23529411764705882, 0.6276258050283593)
+
+model_BERT_n2v_combined_fixed model_n2v_bkg_penalty:
+(7.314285714285714, 0.00684085843582897)
+
+model_BERT_n2v_combined_fixed model_glove_n2v_combined_prop:
+(0.78125, 0.3767591178115821)
+
+model_BERT_n2v_combined_fixed model_glove_n2v_all_uniform:
+(6.918918918918919, 0.008528852154051912)
+
+model_BERT_n2v_combined_fixed model_BERT_n2v_combined_prop:
+(0.0, 1.0)
+
+model_BERT_n2v_combined_fixed model_glove_n2v_bkg_penalty:
+(5.297297297297297, 0.021358540433834634)
+
+model_BERT_n2v_combined_fixed model_glove_n2v_all_prop:
+(0.2647058823529412, 0.6069054272179508)
+
+model_BERT_n2v_combined_fixed model_glove:
+(23.757575757575758, 1.0926445169555436e-06)
+
+model_BERT_n2v_combined_fixed model_n2v_all_uniform:
+(0.10256410256410256, 0.7487740417065472)
+
+model_BERT_n2v_combined_fixed model_glove_n2v_combined_fixed:
+(2.53125, 0.11161176829829161)
+
+model_BERT_n2v_combined_fixed model:
+(14.880952380952381, 0.00011451344802160634)
+
+model_BERT_n2v_combined_fixed model_n2v_combined_fixed:
+(2.857142857142857, 0.09096894797535765)
+
+model_BERT_n2v_combined_fixed model_n2v_combined_prop:
+(1.53125, 0.21592493894013678)
+
+model_BERT_n2v_all_uniform model_BERT_n2v_all_prop:
+(0.0, 1.0)
+
+model_BERT_n2v_all_uniform model_n2v_bkg_penalty:
+(8.756756756756756, 0.003084570989956616)
+
+model_BERT_n2v_all_uniform model_glove_n2v_combined_prop:
+(0.2647058823529412, 0.6069054272179508)
+
+model_BERT_n2v_all_uniform model_glove_n2v_all_uniform:
+(5.6, 0.01796047752607879)
+
+model_BERT_n2v_all_uniform model_BERT_n2v_combined_prop:
+(0.0, 1.0)
+
+model_BERT_n2v_all_uniform model_glove_n2v_bkg_penalty:
+(6.918918918918919, 0.008528852154051912)
+
+model_BERT_n2v_all_uniform model_glove_n2v_all_prop:
+(0.03333333333333333, 0.8551321405847059)
+
+model_BERT_n2v_all_uniform model_glove:
+(27.272727272727273, 1.7668604421878377e-07)
+
+model_BERT_n2v_all_uniform model_n2v_all_uniform:
+(0.0, 1.0)
+
+model_BERT_n2v_all_uniform model_glove_n2v_combined_fixed:
+(1.53125, 0.21592493894013678)
+
+model_BERT_n2v_all_uniform model:
+(17.357142857142858, 3.0973197723945537e-05)
+
+model_BERT_n2v_all_uniform model_n2v_combined_fixed:
+(1.9393939393939394, 0.1637343543245882)
+
+model_BERT_n2v_all_uniform model_n2v_combined_prop:
+(0.78125, 0.3767591178115821)
+
+model_BERT_n2v_all_prop model_n2v_bkg_penalty:
+(9.025, 0.002663119259138558)
+
+model_BERT_n2v_all_prop model_glove_n2v_combined_prop:
+(0.12121212121212122, 0.7277235466695502)
+
+model_BERT_n2v_all_prop model_glove_n2v_all_uniform:
+(4.694444444444445, 0.030260280020471753)
+
+model_BERT_n2v_all_prop model_BERT_n2v_combined_prop:
+(0.041666666666666664, 0.8382564863858263)
+
+model_BERT_n2v_all_prop model_glove_n2v_bkg_penalty:
+(7.605263157894737, 0.0058198169540098505)
+
+model_BERT_n2v_all_prop model_glove_n2v_all_prop:
+(0.0, 1.0)
+
+model_BERT_n2v_all_prop model_glove:
+(25.289473684210527, 4.933940267138724e-07)
+
+model_BERT_n2v_all_prop model_n2v_all_uniform:
+(0.025, 0.8743670611628918)
+
+model_BERT_n2v_all_prop model_glove_n2v_combined_fixed:
+(1.0909090909090908, 0.2962698714842834)
+
+model_BERT_n2v_all_prop model:
+(18.232558139534884, 1.955080544629483e-05)
+
+model_BERT_n2v_all_prop model_n2v_combined_fixed:
+(1.4411764705882353, 0.22994905679421007)
+
+model_BERT_n2v_all_prop model_n2v_combined_prop:
+(0.5161290322580645, 0.47249761400068846)
+
+model_n2v_bkg_penalty model_glove_n2v_combined_prop:
+(15.612903225806452, 7.772240795323116e-05)
+
+model_n2v_bkg_penalty model_glove_n2v_all_uniform:
+(28.657894736842106, 8.63611907259058e-08)
+
+model_n2v_bkg_penalty model_BERT_n2v_combined_prop:
+(8.5, 0.0035514648077060763)
+
+model_n2v_bkg_penalty model_glove_n2v_bkg_penalty:
+(0.16666666666666666, 0.6830913983096086)
+
+model_n2v_bkg_penalty model_glove_n2v_all_prop:
+(13.793103448275861, 0.00020408400998040742)
+
+model_n2v_bkg_penalty model_glove:
+(6.722222222222222, 0.009521891184098848)
+
+model_n2v_bkg_penalty model_n2v_all_uniform:
+(16.40909090909091, 5.103985260291326e-05)
+
+model_n2v_bkg_penalty model_glove_n2v_combined_fixed:
+(21.806451612903224, 3.0158433514168103e-06)
+
+model_n2v_bkg_penalty model:
+(2.3703703703703702, 0.12365771040283367)
+
+model_n2v_bkg_penalty model_n2v_combined_fixed:
+(21.441176470588236, 3.6485109408413597e-06)
+
+model_n2v_bkg_penalty model_n2v_combined_prop:
+(16.457142857142856, 4.976233487907417e-05)
+
+model_glove_n2v_combined_prop model_glove_n2v_all_uniform:
+(5.882352941176471, 0.015293371030198944)
+
+model_glove_n2v_combined_prop model_BERT_n2v_combined_prop:
+(0.45714285714285713, 0.49896229860376107)
+
+model_glove_n2v_combined_prop model_glove_n2v_bkg_penalty:
+(14.814814814814815, 0.00011860013866224722)
+
+model_glove_n2v_combined_prop model_glove_n2v_all_prop:
+(0.08333333333333333, 0.7728299926844475)
+
+model_glove_n2v_combined_prop model_glove:
+(26.88372093023256, 2.1607121265531657e-07)
+
+model_glove_n2v_combined_prop model_n2v_all_uniform:
+(0.21052631578947367, 0.6463551955394902)
+
+model_glove_n2v_combined_prop model_glove_n2v_combined_fixed:
+(1.125, 0.2888443663464818)
+
+model_glove_n2v_combined_prop model:
+(20.020833333333332, 7.660302094057405e-06)
+
+model_glove_n2v_combined_prop model_n2v_combined_fixed:
+(1.4545454545454546, 0.22779999398822554)
+
+model_glove_n2v_combined_prop model_n2v_combined_prop:
+(0.16666666666666666, 0.6830913983096086)
+
+model_glove_n2v_all_uniform model_BERT_n2v_combined_prop:
+(6.25, 0.01241933065155227)
+
+model_glove_n2v_all_uniform model_glove_n2v_bkg_penalty:
+(25.289473684210527, 4.933940267138724e-07)
+
+model_glove_n2v_all_uniform model_glove_n2v_all_prop:
+(9.6, 0.0019457736937391556)
+
+model_glove_n2v_all_uniform model_glove:
+(38.94230769230769, 4.3651695094350006e-10)
+
+model_glove_n2v_all_uniform model_n2v_all_uniform:
+(8.45, 0.0036504344044418794)
+
+model_glove_n2v_all_uniform model_glove_n2v_combined_fixed:
+(3.272727272727273, 0.070440429272088)
+
+model_glove_n2v_all_uniform model:
+(30.94736842105263, 2.6512132235211866e-08)
+
+model_glove_n2v_all_uniform model_n2v_combined_fixed:
+(2.0833333333333335, 0.14891467317876161)
+
+model_glove_n2v_all_uniform model_n2v_combined_prop:
+(4.266666666666667, 0.03886710381241731)
+
+model_BERT_n2v_combined_prop model_glove_n2v_bkg_penalty:
+(6.25, 0.01241933065155227)
+
+model_BERT_n2v_combined_prop model_glove_n2v_all_prop:
+(0.10256410256410256, 0.7487740417065472)
+
+model_BERT_n2v_combined_prop model_glove:
+(22.13157894736842, 2.5458715561150116e-06)
+
+model_BERT_n2v_combined_prop model_n2v_all_uniform:
+(0.025, 0.8743670611628918)
+
+model_BERT_n2v_combined_prop model_glove_n2v_combined_fixed:
+(1.7297297297297298, 0.18844541724270242)
+
+model_BERT_n2v_combined_prop model:
+(16.48780487804878, 4.896400204355142e-05)
+
+model_BERT_n2v_combined_prop model_n2v_combined_fixed:
+(2.1315789473684212, 0.14429205544010104)
+
+model_BERT_n2v_combined_prop model_n2v_combined_prop:
+(1.1612903225806452, 0.2811980995641761)
+
+model_glove_n2v_bkg_penalty model_glove_n2v_all_prop:
+(12.0, 0.0005320055051392492)
+
+model_glove_n2v_bkg_penalty model_glove:
+(7.681818181818182, 0.005577994003398252)
+
+model_glove_n2v_bkg_penalty model_n2v_all_uniform:
+(14.45, 0.00014392985649715713)
+
+model_glove_n2v_bkg_penalty model_glove_n2v_combined_fixed:
+(19.862068965517242, 8.323556199256734e-06)
+
+model_glove_n2v_bkg_penalty model:
+(3.7037037037037037, 0.05429182836685469)
+
+model_glove_n2v_bkg_penalty model_n2v_combined_fixed:
+(19.53125, 9.896734625245616e-06)
+
+model_glove_n2v_bkg_penalty model_n2v_combined_prop:
+(15.612903225806452, 7.772240795323116e-05)
+
+model_glove_n2v_all_prop model_glove:
+(26.256410256410255, 2.9896083005409287e-07)
+
+model_glove_n2v_all_prop model_n2v_all_uniform:
+(0.0, 1.0)
+
+model_glove_n2v_all_prop model_glove_n2v_combined_fixed:
+(2.5, 0.11384629800665763)
+
+model_glove_n2v_all_prop model:
+(17.520833333333332, 2.8417667670336965e-05)
+
+model_glove_n2v_all_prop model_n2v_combined_fixed:
+(2.769230769230769, 0.0960923294556734)
+
+model_glove_n2v_all_prop model_n2v_combined_prop:
+(0.6428571428571429, 0.4226780741706353)
+
+model_glove model_n2v_all_uniform:
+(26.694444444444443, 2.383057066402791e-07)
+
+model_glove model_glove_n2v_combined_fixed:
+(30.72340425531915, 2.9755432552208025e-08)
+
+model_glove model:
+(0.21052631578947367, 0.6463551955394902)
+
+model_glove model_n2v_combined_fixed:
+(31.6875, 1.8108397774948322e-08)
+
+model_glove model_n2v_combined_prop:
+(28.8, 8.025111266927582e-08)
+
+model_n2v_all_uniform model_glove_n2v_combined_fixed:
+(2.1176470588235294, 0.1456100953968629)
+
+model_n2v_all_uniform model:
+(17.42222222222222, 2.9930622223033853e-05)
+
+model_n2v_all_uniform model_n2v_combined_fixed:
+(2.45, 0.11752486809663953)
+
+model_n2v_all_uniform model_n2v_combined_prop:
+(0.6956521739130435, 0.4042484947394712)
+
+model_glove_n2v_combined_fixed model:
+(22.685185185185187, 1.9083352345314023e-06)
+
+model_glove_n2v_combined_fixed model_n2v_combined_fixed:
+(0.0, 1.0)
+
+model_glove_n2v_combined_fixed model_n2v_combined_prop:
+(0.08333333333333333, 0.7728299926844475)
+
+model model_n2v_combined_fixed:
+(24.452830188679247, 7.615156413822552e-07)
+
+model model_n2v_combined_prop:
+(21.78, 3.0577097964381603e-06)
+
+model_n2v_combined_fixed model_n2v_combined_prop:
+(0.3076923076923077, 0.5790997419539188)
+

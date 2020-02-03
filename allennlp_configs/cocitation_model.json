@@ -3,8 +3,8 @@
   "pytorch_seed": std.parseInt(std.extVar("PYTORCH_SEED")),
   "numpy_seed": std.parseInt(std.extVar("NUMPY_SEED")),
   "dataset_reader": {
-    "type": "acl_classifier_reader",
-    "label_field": std.extVar("LABEL_FIELD"),
+    "type": "cocitation_reader",
+    "text_lookup_path": std.extVar("TEXT_LOOKUP_PATH"),
     "token_indexers": {
       "bert": {
         "type": "bert-pretrained",
@@ -19,27 +19,27 @@
   "test_data_path": std.extVar("TEST_DATA"),
   "evaluate_on_test": false,
   "model": {
-    "type": "acl_classifier",
+    "type": "cocitation_triplet",
     "verbose_metrics": true,
     "use_node_vector": std.extVar("USE_NODE_VECTOR"),
     "use_abstract": std.extVar("USE_ABSTRACT"),
     "dropout": 0.3,
-    "classifier_feedforward": {
-      "input_dim": std.parseInt(std.extVar("INPUT_DIM")),
-      "num_layers": 2,
-      "hidden_dims": [
-        std.parseInt(std.extVar("HIDDEN_DIM")),
-        std.parseInt(std.extVar("TOP_N"))
-      ],
-      "activations": [
-        "relu",
-        "linear"
-      ],
-      "dropout": [
-        0.4,
-        0.0
-      ]
-    },
+//    "classifier_feedforward": {
+//      "input_dim": std.parseInt(std.extVar("INPUT_DIM")),
+//      "num_layers": 2,
+//      "hidden_dims": [
+//        std.parseInt(std.extVar("HIDDEN_DIM")),
+//        std.parseInt(std.extVar("TOP_N"))
+//      ],
+//      "activations": [
+//        "relu",
+//        "linear"
+//      ],
+//      "dropout": [
+//        0.4,
+//        0.0
+//      ]
+//    },
     "node_embedder": {
       "type": "embedding",
       "embedding_dim": std.parseInt(std.extVar("EMBEDDING_DIM")),
@@ -55,7 +55,7 @@
         "bert": {
           "type": "bert-pretrained",
           "pretrained_model": std.extVar("BERT_WEIGHTS"),
-          "requires_grad": "11 10 9 8 7 6",
+          "requires_grad": "11",
           "top_layer_only": true
         }
       }
@@ -63,15 +63,15 @@
   },
   "iterator": {
     "type": "bucket",
-    "sorting_keys": [["abstract", "num_tokens"]],
-    "batch_size": 8,
+    "sorting_keys": [["text_anchor", "num_tokens"]],
+    "batch_size": 16,
     "cache_instances": true
   },
   "trainer": {
     "num_epochs": 150,
     "grad_clipping": 5.0,
-    "patience": 15,
-    "validation_metric": "+average_F1",
+    "patience": 10,
+    "validation_metric": "-loss",
     "num_serialized_models_to_keep": 1,
     "cuda_device": std.parseInt(std.extVar("CUDA_DEVICE")),
     "should_log_parameter_statistics": false,

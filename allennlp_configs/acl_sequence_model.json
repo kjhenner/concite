@@ -21,7 +21,7 @@
     "type": "acl_sequence_model",
     "use_abstracts": std.extVar("USE_ABSTRACTS"),
     "use_node_vectors": std.extVar("USE_NODE_VECTORS"),
-    "dropout": 0.2,
+    "dropout": 0.5,
     "seq_embedder": {
       "allow_unmatched_keys": true,
       "embedder_to_indexer_map": {
@@ -51,7 +51,8 @@
     "contextualizer": {
       "type": std.extVar("CONTEXTUALIZER"),
       "input_size": std.parseInt(std.extVar("INPUT_DIM")),
-      "hidden_size": std.parseInt(std.extVar("HIDDEN_DIM"))
+      "hidden_size": std.parseInt(std.extVar("HIDDEN_DIM")),
+      "dropout": 0.3
     }
   },
   "iterator": {
@@ -70,7 +71,7 @@
     //"gradient_accumulation_batch_size": 32,
     "optimizer": {
       "type": "bert_adam",
-      "lr": 2e-4,
+      "lr": 2e-5,
       "t_total": -1,
       "max_grad_norm": 1.0,
       "parameter_groups": [

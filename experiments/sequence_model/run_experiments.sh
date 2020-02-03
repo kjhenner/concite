@@ -3,7 +3,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 export CUDA_DEVICE=$1
 
-for SEED in 666 669 672 675 678
+for SEED in 666 #669 672 675 678
 do
   export SEED=$SEED
   export PYTORCH_SEED=$SEED

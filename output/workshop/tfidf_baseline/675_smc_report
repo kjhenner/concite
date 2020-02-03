@@ -1,0 +1,16 @@
+                           precision    recall  f1-score   support
+
+               annotation     0.4483    0.6842    0.5417        19
+ educational_applications     0.6667    0.7273    0.6957        11
+                semantics     0.5510    0.6279    0.5870        43
+natural_language_learning     0.6000    0.7500    0.6667        36
+                      nlg     0.6842    0.5200    0.5909        25
+                 dialogue     0.8333    0.8209    0.8271        67
+      machine_translation     0.9667    0.9206    0.9431        63
+    multiword_expressions     0.0000    0.0000    0.0000         6
+         chinese_language     0.7143    0.5882    0.6452        17
+                  bio_nlp     0.8929    0.7143    0.7937        35
+
+                 accuracy                         0.7329       322
+                macro avg     0.6357    0.6353    0.6291       322
+             weighted avg     0.7403    0.7329    0.7315       322

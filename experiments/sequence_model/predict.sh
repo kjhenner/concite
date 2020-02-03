@@ -1,4 +1,4 @@
-ROOT_DIR=/shared-1/projects/concite/
+ROOT_DIR=/shared/1/projects/concite/
 CUDA_DEVICE=$1
 
 allennlp predict \

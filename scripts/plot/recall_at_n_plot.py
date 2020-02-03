@@ -40,15 +40,13 @@ if __name__ == "__main__":
             'n2v all-p': './output/sequence/model_n2v_all_prop.jsonl',
             'n2v all-u': './output/sequence/model_n2v_all_uniform.jsonl',
             'n2v all-b': './output/sequence/model_n2v_bkg_penalty.jsonl',
-            'n2v concat-f': './output/sequence/model_BERT_n2v_combined_fixed.jsonl',
-            'n2v concat-p': './output/sequence/model_BERT_n2v_combined_prop.jsonl',
-            'n2v concat-p': './output/sequence/model_BERT_n2v_combined_prop.jsonl',
+            'n2v concat-f': './output/sequence/model_n2v_combined_fixed.jsonl',
+            'n2v concat-p': './output/sequence/model_n2v_combined_prop.jsonl',
             'SciBERT': './output/sequence/model_BERT.jsonl',
             'SciBERT n2v all-p': './output/sequence/model_BERT_n2v_all_prop.jsonl',
             'SciBERT n2v all-u': './output/sequence/model_BERT_n2v_all_uniform.jsonl',
             'SciBERT n2v all-b': './output/sequence/model_BERT_n2v_bkg_penalty.jsonl',
             'SciBERT n2v concat-f': './output/sequence/model_BERT_n2v_combined_fixed.jsonl',
-            'SciBERT n2v concat-p': './output/sequence/model_BERT_n2v_combined_prop.jsonl',
             'SciBERT n2v concat-p': './output/sequence/model_BERT_n2v_combined_prop.jsonl'
         }
     datasets = {k: load_data(v) for k, v in models.items()}
