@@ -131,10 +131,10 @@ if __name__ == "__main__":
         model_path = f.name
         train_ngram_lm(bin_path, train_path, model_path, order=order)
         test_ngram_lm(bin_path, test_path, model_path, order=order)
-        vocab = get_vocab(train_path)
-        lm = load_lm(model_path)
-        metrics = [recall_at_n(n) for n in range(1, 50)]
-        predict_sequences(test_path, lm, vocab, metrics, unigram_only)
-        with open(metric_out_path, 'w') as f:
-            for metric in metrics:
-                f.write("{}: {}\n".format(metric.n, metric.get_metric()))
+#        vocab = get_vocab(train_path)
+#        lm = load_lm(model_path)
+#        metrics = [recall_at_n(n) for n in range(1, 50)]
+#        predict_sequences(test_path, lm, vocab, metrics, unigram_only)
+#        with open(metric_out_path, 'w') as f:
+#            for metric in metrics:
+#                f.write("{}: {}\n".format(metric.n, metric.get_metric()))

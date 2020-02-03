@@ -1,17 +1,17 @@
 ROOT_DIR=/shared/1/projects/concite/
 CUDA_DEVICE=2
 
-#for MODEL in "model" \
-#  "model_BERT" \
-#  "model_BERT_n2v_all_prop" \
-#  "model_BERT_n2v_all_uniform" \
-#  "model_BERT_n2v_bkg_penalty" \
-#  "model_BERT_n2v_combined_fixed" \
-#  "model_BERT_n2v_combined_prop" \
-#  "model_n2v_all_prop" \
-#  "model_n2v_all_uniform" \
-#  "model_n2v_bkg_penalty" \
-#  "model_n2v_combined_fixed" \
+for MODEL in "model" \
+  "model_BERT" \
+  "model_BERT_n2v_all_prop" \
+  "model_BERT_n2v_all_uniform" \
+  "model_BERT_n2v_bkg_penalty" \
+  "model_BERT_n2v_combined_fixed" \
+  "model_BERT_n2v_combined_prop" \
+  "model_n2v_all_prop" \
+  "model_n2v_all_uniform" \
+  "model_n2v_bkg_penalty" \
+  "model_n2v_combined_fixed" \
 for MODEL in "model_n2v_combined_prop"
 do
   allennlp evaluate \
