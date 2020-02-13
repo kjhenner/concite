@@ -1,5 +1,5 @@
 CUDA_DEVICE=$1
-MODEL=model_n2v_all_uniform
+MODEL=model_BERT_n2v_all_prop
 
 allennlp predict \
   /shared/0/projects/concite/serialization/cocitation_serialization/666/"$MODEL"/model.tar.gz \
