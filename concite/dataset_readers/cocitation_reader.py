@@ -56,6 +56,10 @@ class CocitationReader(DatasetReader):
         tokens_anchor = self._tokenizer.split_words(text_anchor)
         text_pos = self.data_lookup[pid_pos]
         tokens_pos = self._tokenizer.split_words(text_pos)
+        # Hack to make the predictor work: Comment out the
+        # random.choice part and uncomment the pid_neg = pid_pos
+        # line.
+        #pid_neg = pid_pos
         pid_neg = random.choice(self.pid_set)
         text_neg = self.data_lookup[pid_neg]
         tokens_neg = self._tokenizer.split_words(text_neg)

@@ -1,0 +1,12 @@
+External_17092 External_711 6
+External_17092 P09-2004 3
+External_17092 L08-1093 6
+External_711 P09-2004 9
+External_711 L08-1093 11
+L08-1093 P09-2004 4
+External_17092 External_7528 2
+External_711 External_7528 4
+External_7528 L08-1093 3
+E14-1068 P10-1040 2
+External_7528 W14-1105 1
+W14-1603 W14-1603 1
