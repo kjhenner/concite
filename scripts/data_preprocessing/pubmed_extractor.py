@@ -8,11 +8,15 @@ import jsonlines
 from collections import defaultdict
 import re
 import xml.etree.cElementTree as etree
+from spacy.lang.en import English
 
 class Loader():
 
     def __init__(self, data_dir):
         self.doc_paths = self.get_doc_paths(data_dir)
+        self.nlp = English()
+        sentencizer = self.nlp.create_pipe("sentencizer")
+        self.nlp.add_pipe(sentencizer)
 
     def get_doc_paths(self, data_dir):
         return [os.path.join(dp, f)
@@ -24,16 +28,16 @@ class Loader():
         edges = []
         count = len(self.doc_paths)
         for i, path in enumerate(self.doc_paths):
-            #if i % 10 == 0:
-            #    print(str(i) + " of " + str(count))
+            if i % 10 == 0:
+                print(str(i) + " of " + str(count))
             try:
                 document, cit_edges = self.parse_cit_contexts(path)
                 documents.append(document)
                 edges += cit_edges
             except Exception as e:
                 pass
-                #print(path)
-                #print(e)
+                print(path)
+                print(e)
         return documents, edges
 
     def get_context_window(self, text, offset, window_size):
@@ -54,13 +58,15 @@ class Loader():
         return '\t'.join(map(str, [
             document.get('pmid'),
             document.get('title'),
+            document.get('abstract'),
             document.get('year'),
             document.get('keywords')]))
 
     def edge_to_tsv_row(self, edge, key=None):
         return '\t'.join([
             edge['citing_paper_id'],
-            edge['cited_paper_id']])
+            edge['cited_paper_id'],
+            edge['cite_sentence']])
 
     def parse_cit_contexts(self, path):
         tree = etree.iterparse(path, events=('start', 'end'))
@@ -96,8 +102,6 @@ class Loader():
                     document['year'] = elem.text
                 if elem.tag == 'kwd':
                     document['keywords'] += ' ' + str(elem.text)
-                if elem.tag == 'kwd':
-                    document['keywords'] += ' ' + str(elem.text)
                 if elem.tag == 'ref':
                     rid = self.rid2int(elem.get('id'))
                     ref_dict[rid] = {}
@@ -120,15 +124,15 @@ class Loader():
                             for id in range(prev_xref_rid + 1, self.rid2int(id_part)):
                                 offset_dict[id].append(offset)
                 if elem.tail is not None:
-                    offset += len(elem.tail)
-                    text += elem.tail
+                    offset += len(elem.tail) + 1
+                    text += elem.tail + ' '
                 if elem.tag == 'xref' and elem.get('ref-type') == 'bibr' and elem.tail == '-':
                     prev_xref_rid = self.rid2int(elem.get('rid'))
                 else:
                     prev_xref_rid = None
         return (document, self.get_edges(offset_dict, ref_dict, document, text))
 
-    def get_edges(self, offset_dict, ref_dict, document, text):
+    def get_edges(self, offset_dict, ref_dict, document, text, char_window=600):
         edges = []
         for rid, offsets in offset_dict.items():
             # Some papers are simply missing bibliography ref entries for some
@@ -137,13 +141,9 @@ class Loader():
                 for offset in offsets:
                     edges.append({
                         'citation_id': document['pmid'] + '_' + str(rid),
-                        'cite_context': self.get_context_window(text, offset, 300),
+                        'cite_sentence': self.mid_sentence(self.get_context_window(text, offset, char_window)),
                         'citing_paper_id': document['pmid'],
-                        'citing_paper_title': document['title'],
-                        'citing_paper_year': document['year'],
                         'cited_paper_id': ref_dict[rid].get('pmid'),
-                        'cited_paper_title': ref_dict[rid].get('title'),
-                        'cited_paper_year': ref_dict[rid].get('year')
                         })
         return edges
 
@@ -154,3 +154,33 @@ class Loader():
     def write_document_data(self, document_data, out_path):
         with jsonlines.open(out_path, 'w') as writer:
             writer.write_all(document_data)
+
+    def mid_sentence(self, string):
+        mid = len(string)/2
+        pos = 0
+        for sent in self.nlp(re.sub(r'\[\.', ']. ', string)).sents:
+            if pos + len(str(sent)) > mid:
+                return str(sent)
+            else:
+                pos += len(str(sent))
+
+if __name__ == "__main__":
+
+    data_dir = sys.argv[1]
+    out_dir = sys.argv[2]
+
+    loader = Loader(data_dir)
+    articles, edges = loader.parse_paths()
+    print(len(articles))
+    articles = [article for article in articles if article.get('pmid')]
+    ids = set(article['pmid'] for article in articles)
+    edges = [edge for edge in edges if edge.get('citing_paper_id') in ids and edge.get('cited_paper_id') in ids]
+
+    loader.write_edge_data(edges, os.path.join(out_dir, 'pubmed_edges.jsonl'))
+    loader.write_document_data(articles, os.path.join(out_dir, 'pubmed_articles.jsonl'))
+
+#    with open(os.path.join(out_dir, 'pubmed_articles.tsv'), 'w') as f:
+#        f.write('\n'.join([loader.article_to_tsv_row(article) for article in articles]))
+#
+#    with open(os.path.join(out_dir, 'pubmed_edges.tsv'), 'w') as f:
+#        f.write('\n'.join([loader.edge_to_tsv_row(edge) for edge in edges]))
