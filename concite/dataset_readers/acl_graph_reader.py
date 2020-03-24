@@ -58,6 +58,6 @@ class AclGraphReader(DatasetReader):
         fields = {
             'text': TextField(text_tokens, self._token_indexers),
             'label': LabelField(label),
-            'paper_id': LabelField(paper_id, label_namespace='paper_id_labels')
+            'paper_id': LabelField(paper_id, label_namespace='paper_ids')
         }
         return Instance(fields)

@@ -1,6 +1,11 @@
 {
+  "random_seed": std.parseInt(std.extVar("SEED")),
+  "pytorch_seed": std.parseInt(std.extVar("PYTORCH_SEED")),
+  "numpy_seed": std.parseInt(std.extVar("NUMPY_SEED")),
   "dataset_reader": {
-    "type": "pubmed_document_dataset_reader",
+    "type": "acl_graph_reader",
+    "label_field": std.extVar("LABEL_FIELD"),
+    "text_field": "abstract",
     "token_indexers": {
       "bert": {
         "type": "bert-pretrained",
@@ -10,10 +15,19 @@
       }
     }
   },
-  "train_data_path": "tests/fixtures/n2v_pubmed_articles.jsonl",
-  "validation_data_path": "tests/fixtures/n2v_pubmed_articles.jsonl",
+  "train_data_path": std.extVar("TRAINING_DATA"),
+  "validation_data_path": std.extVar("DEV_DATA"),
+  "test_data_path": std.extVar("TEST_DATA"),
+  "evaluate_on_test": false,
   "model": {
-    "type": "venue_classifier",
+    "type": "acl_gat_classifier",
+    "verbose_metrics": true,
+    "node_embedder": {
+      "type": "embedding",
+      "embedding_dim": std.parseInt(std.extVar("EMBEDDING_DIM")),
+      "pretrained_file": std.extVar("PRETRAINED_FILE"),
+      "vocab_namespace": "paper_ids"
+    },
     "text_field_embedder": {
       "allow_unmatched_keys": true,
       "embedder_to_indexer_map": {
@@ -33,18 +47,22 @@
       "hidden_dims": [50, 25],
       "activations": ["relu", "linear"],
       "dropout": [0.25, 0.0]
-    }
+    },
+    "edge_path": std.extVar("EDGE_PATH")
   },
   "iterator": {
-    "type": "basic",
-    "batch_size": 5 
+    "type": "bucket",
+    "sorting_keys": [["text", "num_tokens"]],
+    "batch_size": 1,
+    "cache_instances": true
   },
   "trainer": {
     "num_epochs": 2,
-    "patience": 10,
-    "cuda_device": -1,
     "grad_clipping": 5.0,
+    "patience": 10,
     //"validation_metric": "+average_F1",
+    "num_serialized_models_to_keep": 1,
+    "cuda_device": std.parseInt(std.extVar("CUDA_DEVICE")),
     "optimizer": {
       "type": "bert_adam",
       "lr": 1e-5,

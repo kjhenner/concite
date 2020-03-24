@@ -1,14 +1,18 @@
 from typing import Dict, Optional
-
-import allennlp
-import numpy as np
-import scipy.sparse as sp
-import torch
-import torch.nn.functional as F
-from torch_geometric.data import NeighborSampler, Data
-from torch.nn import init
 from collections import defaultdict
 import jsonlines
+
+import numpy as np
+import scipy.sparse as sp
+
+import torch
+import torch.nn.functional as F
+from torch.nn import init
+
+from torch_geometric.data import NeighborSampler, Data
+from torch_geometric.nn import GATConv
+
+import allennlp
 from allennlp.common import Params
 from allennlp.data import Instance
 from allennlp.data import Vocabulary
@@ -24,7 +28,7 @@ from allennlp.training.metrics import CategoricalAccuracy, F1Measure
 from overrides import overrides
 
 class GATNet(torch.nn.Module):
-    def __init__(self, in_channels, out_chennels):
+    def __init__(self, in_channels, out_channels):
         super(GATNet, self).__init__()
         self.conv1 = GATConv(in_channels, 8, heads=8, dropout=0.6)
         self.conv2 = GATConv(8 * 8, out_channels, heads=1, concat=True,
@@ -35,7 +39,7 @@ class GATNet(torch.nn.Module):
         x = x[block.n_id]
         x = F.elu(
                 self.conv1((x, x[block.res_n_id]), block.edge_index,
-                    size=block.size)
+                    size=block.size))
         x = F.dropout(x, p=0.06, training=self.training)
         block = data_flow[1]
         x = self.conv2((x, x[block.res_n_id]), block.edge_index,
@@ -50,7 +54,6 @@ class AclGatClassifier(Model):
                  verbose_metrics: False,
                  classifier_feedforward: FeedForward,
                  edge_path = str,
-                 node_path = str,
                  use_node_vector: bool = True,
                  use_abstract: bool = True,
                  dropout: float = 0.2,
@@ -62,20 +65,22 @@ class AclGatClassifier(Model):
         self.text_field_embedder = text_field_embedder
         self.dropout = torch.nn.Dropout(dropout)
         self.num_classes = self.vocab.get_vocab_size("labels")
+        self.use_node_vector = use_node_vector
+        self.use_abstract = use_abstract
 
         self.classifier_feedforward = classifier_feedforward
 
         self.label_accuracy = CategoricalAccuracy()
         self.label_f1_metrics = {}
 
-        graph_data = Data(self.load_edge_index(edge_path))
+        graph_data = Data(edge_index=self.load_edge_index(edge_path))
 
         self.loader = NeighborSampler(graph_data, size=[25, 10], num_hops=2,
-                batch_size=1000, shuffle=True, add_self_loops=True)
+                shuffle=True, add_self_loops=True)
 
         self.verbose_metrics = verbose_metrics
 
-        self.net = GATNet(100, self.num_classes)
+        self.net = GATNet(384, self.num_classes)
 
         for i in range(self.num_classes):
             label_name = vocab.get_token_from_index(index=i, namespace="labels")
@@ -88,10 +93,11 @@ class AclGatClassifier(Model):
     def load_edge_index(self, edge_path):
         row_idx = []
         col_idx = []
-
-        for edge in jsonlines.open(self.edge_path):
-            citing_idx = vocabulary.get_token_index(edge["metadata"]["citing_paper"])
-            cited_idx = vocabulary.get_token_index(edge["metadata"]["cited_paper"])
+        for edge in jsonlines.open(edge_path):
+            citing_id = edge["metadata"]["citing_paper"]
+            cited_id = edge["metadata"]["cited_paper"]
+            citing_idx = self.vocab.get_token_index(citing_id, namespace='paper_ids')
+            cited_idx = self.vocab.get_token_index(cited_id, namespace='paper_ids')
             if cited_idx and citing_idx:
                 row_idx.append(citing_idx)
                 col_idx.append(cited_idx)
@@ -103,22 +109,24 @@ class AclGatClassifier(Model):
 
     @overrides
     def forward(self,
-                abstract: Dict[str, torch.LongTensor],
+                text: Dict[str, torch.LongTensor],
                 paper_id: torch.LongTensor,
                 label: torch.LongTensor = None) -> Dict[str, torch.Tensor]:
 
-        if self.use_abstract and self.use_node_vector:
-            embedding = torch.cat([
-                self.text_field_embedder(abstract)[:, 0, :],
-                self.node_embedder(paper_id)], dim=-1)
-        elif self.use_abstract:
-            embedding = self.text_field_embedder(abstract)[:, 0, :]
-        elif self.use_node_vector:
-            embedding = self.node_embedder(paper_id)
-        else:
-            embedding = self.node_embedder(paper_id)
+#        if self.use_abstract and self.use_node_vector:
+#            embedding = torch.cat([
+#                self.text_field_embedder(text)[:, 0, :],
+#                self.node_embedder(paper_id)], dim=-1)
+#        elif self.use_abstract:
+#            embedding = self.text_field_embedder(text)[:, 0, :]
+#        elif self.use_node_vector:
+#            embedding = self.node_embedder(paper_id)
+#        else:
+#            embedding = self.node_embedder(paper_id)
 
-        logits = self.classifier_feedforward(self.dropout(embedding))
+        for data_flow in self.loader(paper_id):
+            logits = self.net(self.node_embedder.weight, data_flow)
+
         class_probs = F.softmax(logits, dim=1)
         output_dict = {"logits": logits}
 
